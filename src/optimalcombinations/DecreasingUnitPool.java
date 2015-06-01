@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 /**
  * @author Pavel Khokhlov
+ * @author jackprescott
  */
 
 public class DecreasingUnitPool
@@ -37,7 +38,7 @@ public class DecreasingUnitPool
 			{
 				for(int c = b + 1; c < pool_.size(); c++)
 				{
-					Group temp = new Group(pool_.get(a), pool_.get(b), pool_.get(c)); // only works for groups of size 3
+					Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c)}); // only works for groups of size 3
 					int gScore = temp.getGroupScore();
 					if(gScore > highestScore)
 					{
@@ -67,7 +68,7 @@ public class DecreasingUnitPool
 				{
 					for(int d = c + 1; d < pool_.size(); d++)
 					{
-						Group temp = new Group(pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d));
+						Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d)});
 						int gScore = temp.getGroupScore();
 						if(gScore > highestScore)
 						{
@@ -100,7 +101,7 @@ public class DecreasingUnitPool
 					{
 						for(int e = d + 1; e < pool_.size(); e++)
 						{
-							Group temp = new Group(pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e));
+							Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e)});
 							int gScore = temp.getGroupScore();
 							if(gScore > highestScore)
 							{
@@ -219,6 +220,6 @@ public class DecreasingUnitPool
 	{
 		private static final long serialVersionUID = -8560120916174900757L;
 		// ask to either include remaining units in the existing groups 
-		// or create new group wiht the remaining units
+		// or create new group with the remaining units
 	}
 }
