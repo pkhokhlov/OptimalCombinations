@@ -26,30 +26,12 @@ public class Group
 		
 	}
 	
-	public Group(Unit A, Unit B, Unit C)
+	public Group(Unit[] units)
 	{
-		members_.add(A);
-		members_.add(B);
-		members_.add(C);
-		groupSize = members_.size();
-	}
-	
-	public Group(Unit A, Unit B, Unit C, Unit D)
-	{
-		members_.add(A);
-		members_.add(B);
-		members_.add(C);
-		members_.add(D);
-		groupSize = members_.size();
-	}
-	
-	public Group(Unit A, Unit B, Unit C, Unit D, Unit E)
-	{
-		members_.add(A);
-		members_.add(B);
-		members_.add(C);
-		members_.add(D);
-		members_.add(E);
+		for (Unit u : units)
+		{
+			addUnit(u);
+		}
 		groupSize = members_.size();
 	}
 	
