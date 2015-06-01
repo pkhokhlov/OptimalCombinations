@@ -31,7 +31,26 @@ public class Group
 		members_.add(A);
 		members_.add(B);
 		members_.add(C);
-		groupSize = 3;
+		groupSize = members_.size();
+	}
+	
+	public Group(Unit A, Unit B, Unit C, Unit D)
+	{
+		members_.add(A);
+		members_.add(B);
+		members_.add(C);
+		members_.add(D);
+		groupSize = members_.size();
+	}
+	
+	public Group(Unit A, Unit B, Unit C, Unit D, Unit E)
+	{
+		members_.add(A);
+		members_.add(B);
+		members_.add(C);
+		members_.add(D);
+		members_.add(E);
+		groupSize = members_.size();
 	}
 	
 	public ArrayList<Unit> getMembers()
@@ -39,14 +58,9 @@ public class Group
 		return members_;
 	}
 	
-	public void setGroupSize(int gSize)
-	{
-		groupSize = gSize;
-	}
-	
 	public int getSize()
 	{
-		return groupSize;
+		return members_.size();
 	}
 
 	public void addUnit(Unit u)
@@ -55,8 +69,7 @@ public class Group
 	}
 	
 	/**
-	 * Calculates the groupscore.
-	 * Changed x to equal y in second for loop for optimization.
+	 * This function calculates the groupscore.
 	 * @return groupScore
 	 */
 	public int getGroupScore()
@@ -65,8 +78,10 @@ public class Group
 
 		for (int y = 0; y < members_.size(); y++)
 		{
-			for (int x = y; x < members_.get(0).posConnSize_; x++)
+			for (int x = 0; x < members_.get(0).posConnSize_; x++)
 			{
+				if(x == y) // cannot have yourself as a positive connection
+					continue;
 				
 				int tempPoints = members_.get(y).getPosConns().indexOf(members_.get(x));
 				

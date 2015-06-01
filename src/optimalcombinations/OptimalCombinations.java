@@ -73,7 +73,7 @@ public class OptimalCombinations
 		
 		
 		mList2.add(new Unit[]{ A, B, C, D, E, F, G, H, I});
-		DecreasingUnitPoolMethod test = new DecreasingUnitPoolMethod(mList2.getMasterList());
+		DecreasingUnitPool test = new DecreasingUnitPool(mList2.getMasterList(), 3);
 		ArrayList<Group> happiest = test.findHappiestGroups();
 		System.out.println(happiest.toString());
 		/* OUTPUT
