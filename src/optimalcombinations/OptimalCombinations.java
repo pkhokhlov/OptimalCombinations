@@ -22,8 +22,8 @@ public class OptimalCombinations
 	{
 		// TODO code application logic here
 		CreateMasterList mList = new CreateMasterList();
-		CreateMasterList mList2 = new CreateMasterList();
 		
+
 		Unit A = new Unit("A");
 		Unit B = new Unit("B");
 		Unit C = new Unit("C");
@@ -67,20 +67,36 @@ public class OptimalCombinations
 		H.setNegConn(A);
 		I.setPosConns(H, G, D);
 		I.setNegConn(A);
-		J.setPosConns(D, E, F);
+		J.setPosConns(G, H, I);
 		J.setNegConn(I);
 		
 		
+		CreateMasterList mList1 = new CreateMasterList();
+		CreateMasterList mList2 = new CreateMasterList();
+		CreateMasterList mList3 = new CreateMasterList();
 		
-		
-		
+		mList1.add(new Unit[]{ A, B, C, D, E, F, G, H, I, J});
 		mList2.add(new Unit[]{ A, B, C, D, E, F, G, H, I, J});
-		DecreasingUnitPool test = new DecreasingUnitPool(mList2.getMasterList(), 3);
-		ArrayList<Group> strongest = test.findStrongestGroups();
-		System.out.println(strongest.toString());
+		mList3.add(new Unit[]{ A, B, C, D, E, F, G, H, I, J});
+
+		DecreasingUnitPool test1 = new DecreasingUnitPool(mList1.getMasterList(), 3);
+		DecreasingUnitPool test2 = new DecreasingUnitPool(mList2.getMasterList(), 4);
+		DecreasingUnitPool test3 = new DecreasingUnitPool(mList3.getMasterList(), 5);
+
+		ArrayList<Group> strongest1 = test1.findStrongestGroups();
+		System.out.println(strongest1.toString());
+		
+		ArrayList<Group> strongest2 = test2.findStrongestGroups();
+		System.out.println(strongest2.toString());
+		
+		ArrayList<Group> strongest3 = test3.findStrongestGroups();
+		System.out.println(strongest3.toString());
+		
 		/* OUTPUT
 		 *
-		 * [{A, B, C}, {D, E, F, J}, {G, H, I}]
+		 * [{A, B, C}, {D, E, F}, {G, H, I, J}]
+		 * [{G, H, I, J, F}, {A, B, C, D, E}]
+		 * [{D, G, H, I, J}, {A, B, C, E, F}]
 		 */
 		
 		

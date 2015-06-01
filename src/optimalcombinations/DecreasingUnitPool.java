@@ -37,7 +37,7 @@ public class DecreasingUnitPool
 			{
 				for(int c = b + 1; c < pool_.size(); c++)
 				{
-					Group temp = new Group(pool_.get(a), pool_.get(b), pool_.get(c)); // only works for groups of size 3
+					Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c)}); // only works for groups of size 3
 					int gScore = temp.getGroupScore();
 					if(gScore > highestScore)
 					{
@@ -67,7 +67,7 @@ public class DecreasingUnitPool
 				{
 					for(int d = c + 1; d < pool_.size(); d++)
 					{
-						Group temp = new Group(pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d));
+						Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d)});
 						int gScore = temp.getGroupScore();
 						if(gScore > highestScore)
 						{
@@ -100,7 +100,7 @@ public class DecreasingUnitPool
 					{
 						for(int e = d + 1; e < pool_.size(); e++)
 						{
-							Group temp = new Group(pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e));
+							Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e)});
 							int gScore = temp.getGroupScore();
 							if(gScore > highestScore)
 							{
@@ -116,6 +116,8 @@ public class DecreasingUnitPool
 	
 	/**
 	 * pool_.remove(...) works because the pool_ is partly made of the units within best_
+	 * @precondition: best_ contains the most recently calculated strongest group
+	 * @postcondition: all members of best_ are removed from pool_
 	 */
 	public void removeFromPool()
 	{
@@ -128,23 +130,27 @@ public class DecreasingUnitPool
 	/**
 	 * @precondition: inadequatePoolSizeException is thrown
 	 * @postcondition: the remaining units are inserted into the group that would be strongest with the remaining units
-	 * @param remaining
+	 * @param remaining - the set of units that should be inserted
+	 * NOTE: the remaining units may not be all of pool_.
 	 */
 	public void insertIntoOptimalGroup(ArrayList<Unit> remaining)
 	{
 		for(int i = 0; i < remaining.size(); i++)
 		{
 			int strongestIndex = 0;
-			int highestScore = Integer.MIN_VALUE;
+			int highestScoreDif = Integer.MIN_VALUE;
+			
 			for(int j = 0; j < strongestGroups_.size(); j++)
 			{
 				if(strongestGroups_.get(j).getSize() == groupSize_)
 				{
+					int groupScore = strongestGroups_.get(j).getGroupScore();
 					strongestGroups_.get(j).addUnit(remaining.get(i)); // adds the unit in question to the group
 					int tempScore = strongestGroups_.get(j).getGroupScore();
-					if(tempScore > highestScore) // tests if the newly formed group has the highest score out of the others
+					int scoreDif = tempScore - groupScore;
+					if(scoreDif > highestScoreDif) // tests if the newly formed group has the highest score out of the others
 					{
-						highestScore = tempScore; // if it does, the index and score is kept
+						highestScoreDif = scoreDif; // if it does, the index and score is kept
 						strongestIndex = j;
 					}
 					strongestGroups_.get(j).removeUnit(remaining.get(i)); // the unit in question is removed
@@ -170,7 +176,7 @@ public class DecreasingUnitPool
 					catch (inadequatePoolSizeException e)
 					{
 						insertIntoOptimalGroup(pool_);
-						e.printStackTrace();
+						//e.printStackTrace();
 						break;
 					}
 					strongestGroups_.add(best_);
@@ -187,7 +193,7 @@ public class DecreasingUnitPool
 					catch (inadequatePoolSizeException e)
 					{
 						insertIntoOptimalGroup(pool_);
-						e.printStackTrace();
+						//e.printStackTrace();
 						break;
 					}
 					strongestGroups_.add(best_);
@@ -204,7 +210,7 @@ public class DecreasingUnitPool
 					catch (inadequatePoolSizeException e)
 					{
 						insertIntoOptimalGroup(pool_);
-						e.printStackTrace();
+						//e.printStackTrace();
 						break;
 					}
 					strongestGroups_.add(best_);
