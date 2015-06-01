@@ -14,7 +14,7 @@ public class DecreasingUnitPool
 	int iterations_ = 0;
 	
 	ArrayList<Unit> pool_;
-	ArrayList<Group> strongestGroups_;
+	GroupSet strongestGroups_;
 	
 	public DecreasingUnitPool(ArrayList<Unit> pool, int groupSize)
 	{
@@ -143,9 +143,9 @@ public class DecreasingUnitPool
 			
 			for(int j = 0; j < strongestGroups_.size(); j++)
 			{
-				if(strongestGroups_.get(j).getSize() == groupSize_)
+				if(((Group) strongestGroups_.get(j)).getSize() == groupSize_)
 				{
-					int groupScore = strongestGroups_.get(j).getGroupScore();
+					int groupScore = ((Group) strongestGroups_.get(j)).getGroupScore();
 					strongestGroups_.get(j).addUnit(remaining.get(i)); // adds the unit in question to the group
 					int tempScore = strongestGroups_.get(j).getGroupScore();
 					int scoreDif = tempScore - groupScore;
@@ -162,9 +162,9 @@ public class DecreasingUnitPool
 		pool_ = new ArrayList<Unit>(); // TODO: make sure that the remaining people that are not included in remaining are not deleted
 	}
 	
-	public ArrayList<Group> findStrongestGroups()
+	public GroupSet findStrongestGroups()
 	{
-		strongestGroups_ = new ArrayList<Group>();
+		strongestGroups_ = new GroupSet();
 		switch(groupSize_)
 		{
 			case 3:
