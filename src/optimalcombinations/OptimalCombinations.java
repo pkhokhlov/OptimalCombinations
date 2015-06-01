@@ -17,10 +17,10 @@ import java.util.ArrayList;
 public class OptimalCombinations
 {
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args)
 	{
 		// TODO code application logic here
-		@SuppressWarnings("unused")
 		CreateMasterList mList = new CreateMasterList();
 		CreateMasterList mList2 = new CreateMasterList();
 		
@@ -67,18 +67,20 @@ public class OptimalCombinations
 		H.setNegConn(A);
 		I.setPosConns(H, G, D);
 		I.setNegConn(A);
+		J.setPosConns(D, E, F);
+		J.setNegConn(I);
 		
 		
 		
 		
 		
-		mList2.add(new Unit[]{ A, B, C, D, E, F, G, H, I});
+		mList2.add(new Unit[]{ A, B, C, D, E, F, G, H, I, J});
 		DecreasingUnitPool test = new DecreasingUnitPool(mList2.getMasterList(), 3);
-		ArrayList<Group> happiest = test.findHappiestGroups();
-		System.out.println(happiest.toString());
+		ArrayList<Group> strongest = test.findStrongestGroups();
+		System.out.println(strongest.toString());
 		/* OUTPUT
 		 *
-		 * [{A, B, C}, {D, E, F}, {G, H, I}]
+		 * [{A, B, C}, {D, E, F, J}, {G, H, I}]
 		 */
 		
 		

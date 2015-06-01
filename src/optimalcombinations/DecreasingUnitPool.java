@@ -3,8 +3,6 @@ package optimalcombinations;
 import java.util.ArrayList;
 
 /**
- * TODO: Include an exception that puts the remaining units from the pool into the 
- *       happiest groups if pool_ is not divisible by groupSize.
  * @author Pavel Khokhlov
  */
 
@@ -15,20 +13,23 @@ public class DecreasingUnitPool
 	int iterations_ = 0;
 	
 	ArrayList<Unit> pool_;
-	
+	ArrayList<Group> strongestGroups_;
 	
 	public DecreasingUnitPool(ArrayList<Unit> pool, int groupSize)
 	{
 		pool_ = pool;
-		groupSize_ = groupSize; //TODO change for all group sizes
+		groupSize_ = groupSize;
 	}
 	
 	/**
-	 * @precondition: the pool is evenly divisible by the groupSize
-	 * @postcondition: best_ contains the happiest group possible from pool_
+	 * @precondition: the pool is not empty
+	 * @postcondition: best_ contains the strongest group possible from pool_
 	 */
-	public void findHappiestGroupSize3()
+	public void findStrongestGroupSize3() throws inadequatePoolSizeException
 	{
+		if(pool_.size() < groupSize_)
+			throw new inadequatePoolSizeException();
+		
 		int highestScore = 0;
 		for(int a = 0; a < pool_.size() - 2; a++)
 		{
@@ -49,11 +50,14 @@ public class DecreasingUnitPool
 	}
 	
 	/**
-	 * @precondition: the pool is evenly divisible by the groupSize
-	 * @postcondition: best_ contains the happiest group possible from pool_
+	 * @precondition: the pool is not empty
+	 * @postcondition: best_ contains the strongest group possible from pool_
 	 */
-	public void findHappiestGroupSize4()
+	public void findStrongestGroupSize4() throws inadequatePoolSizeException
 	{
+		if(pool_.size() < groupSize_)
+			throw new inadequatePoolSizeException();
+		
 		int highestScore = 0;
 		for(int a = 0; a < pool_.size() - 3; a++)
 		{
@@ -77,11 +81,14 @@ public class DecreasingUnitPool
 	}
 	
 	/**
-	 * @precondition: the pool is evenly divisible by the groupSize
-	 * @postcondition: best_ contains the happiest group possible from pool_
+	 * @precondition: the pool is not empty
+	 * @postcondition: best_ contains the strongest group possible from pool_
 	 */
-	public void findHappiestGroupSize5()
+	public void findStrongestGroupSize5() throws inadequatePoolSizeException
 	{
+		if(pool_.size() < groupSize_)
+			throw new inadequatePoolSizeException();
+		
 		int highestScore = 0;
 		for(int a = 0; a < pool_.size() - 4; a++)
 		{
@@ -118,36 +125,100 @@ public class DecreasingUnitPool
 		}
 	}
 	
-	public ArrayList<Group> findHappiestGroups()
+	/**
+	 * @precondition: inadequatePoolSizeException is thrown
+	 * @postcondition: the remaining units are inserted into the group that would be strongest with the remaining units
+	 * @param remaining
+	 */
+	public void insertIntoOptimalGroup(ArrayList<Unit> remaining)
 	{
-		ArrayList<Group> happiest = new ArrayList<Group>();
+		for(int i = 0; i < remaining.size(); i++)
+		{
+			int strongestIndex = 0;
+			int highestScore = Integer.MIN_VALUE;
+			for(int j = 0; j < strongestGroups_.size(); j++)
+			{
+				if(strongestGroups_.get(j).getSize() == groupSize_)
+				{
+					strongestGroups_.get(j).addUnit(remaining.get(i)); // adds the unit in question to the group
+					int tempScore = strongestGroups_.get(j).getGroupScore();
+					if(tempScore > highestScore) // tests if the newly formed group has the highest score out of the others
+					{
+						highestScore = tempScore; // if it does, the index and score is kept
+						strongestIndex = j;
+					}
+					strongestGroups_.get(j).removeUnit(remaining.get(i)); // the unit in question is removed
+				}
+			}
+			strongestGroups_.get(strongestIndex).addUnit(remaining.get(i)); // the strongest resulting group from adding the unit from remaining is added
+		}
+		pool_ = new ArrayList<Unit>(); // TODO: make sure that the remaining people that are not included in remaining are not deleted
+	}
+	
+	public ArrayList<Group> findStrongestGroups()
+	{
+		strongestGroups_ = new ArrayList<Group>();
 		switch(groupSize_)
 		{
 			case 3:
 				while(pool_.size() > 0)
 				{
-					findHappiestGroupSize3();
-					happiest.add(best_);
+					try
+					{
+						findStrongestGroupSize3();
+					} 
+					catch (inadequatePoolSizeException e)
+					{
+						insertIntoOptimalGroup(pool_);
+						e.printStackTrace();
+						break;
+					}
+					strongestGroups_.add(best_);
 					removeFromPool();
 				}
 				break;
 			case 4:
 				while(pool_.size() > 0)
 				{
-					findHappiestGroupSize4();
-					happiest.add(best_);
+					try
+					{
+						findStrongestGroupSize4();
+					} 
+					catch (inadequatePoolSizeException e)
+					{
+						insertIntoOptimalGroup(pool_);
+						e.printStackTrace();
+						break;
+					}
+					strongestGroups_.add(best_);
 					removeFromPool();
 				}
 				break;
 			case 5:
 				while(pool_.size() > 0)
 				{
-					findHappiestGroupSize5();
-					happiest.add(best_);
+					try
+					{
+						findStrongestGroupSize5();
+					} 
+					catch (inadequatePoolSizeException e)
+					{
+						insertIntoOptimalGroup(pool_);
+						e.printStackTrace();
+						break;
+					}
+					strongestGroups_.add(best_);
 					removeFromPool();
 				}
 				break;
 		}
-		return happiest;
+		return strongestGroups_;
+	}
+	
+	class inadequatePoolSizeException extends Exception
+	{
+		private static final long serialVersionUID = -8560120916174900757L;
+		// ask to either include remaining units in the existing groups 
+		// or create new group wiht the remaining units
 	}
 }

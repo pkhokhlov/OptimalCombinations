@@ -20,16 +20,22 @@ public class Unit
 	Unit negConn_; // TODO: include an arraylist of negative connections
 	ArrayList<Unit> posConns_ = new ArrayList<Unit>();
 	
-	public Unit(String name, int posConnSize)
-	{
-		name_ = name;
-		posConnSize_ = posConnSize;
-	}
-	
 	public Unit(String name)
 	{
 		name_ = name;
-		posConnSize_ = 3;
+		posConnSize_ = posConns_.size();
+	}
+	
+	public Unit(String name, Unit u1, Unit u2, Unit u3)
+	{
+		name_ = name;
+		setPosConns(u1, u2, u3);
+	}
+	
+	public Unit(String name, Unit[] posConn)
+	{
+		name_ = name;
+		setPosConns(posConn);
 	}
 	
 	public void setPosConns(Unit u1, Unit u2, Unit u3)
@@ -38,6 +44,7 @@ public class Unit
 		posConns_.add(u1);
 		posConns_.add(u2);
 		posConns_.add(u3);
+		posConnSize_ = posConns_.size();
 	}
 	
 	public void setPosConns(Unit[] posConn)
@@ -47,6 +54,7 @@ public class Unit
 		{
 			posConns_.add(unit);
 		}
+		posConnSize_ = posConns_.size();
 	}
 
 	public void setNegConn(Unit negConn)
@@ -64,6 +72,11 @@ public class Unit
 		return posConns_;
 	}
 	
+	public int getPosConnSize()
+	{
+		return posConnSize_;
+	}
+	
 	public Unit getNegConn()
 	{
 		return negConn_;
@@ -73,5 +86,4 @@ public class Unit
 	{
 		return getName();
 	}
-
 }

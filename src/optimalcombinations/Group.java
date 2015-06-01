@@ -66,10 +66,17 @@ public class Group
 	public void addUnit(Unit u)
 	{
 		members_.add(u);
+		groupSize = members_.size();
+	}
+	
+	public void removeUnit(Unit u)
+	{
+		members_.remove(u);
 	}
 	
 	/**
 	 * This function calculates the groupscore.
+	 * TODO: change so that the first index does not have a value > 3 if groupsize > 3
 	 * @return groupScore
 	 */
 	public int getGroupScore()
@@ -87,7 +94,7 @@ public class Group
 				
 				if (tempPoints != -1) // if members_.get(x) is present in the positive connections of members_(y)
 				{
-					groupScore += members_.get(0).posConnSize_ - tempPoints; // adds the priority of the member to the groupscore
+					groupScore += members_.get(0).getPosConnSize() - tempPoints; // adds the priority of the member to the groupscore
 					                                                         // the higher the priority, the lower the index in posConns_
 				}															 
 				else if (members_.get(y).getNegConn().getName().equals(members_.get(x).getName())) // else if members_.get(x) is a negative connection of members_.get(y)
