@@ -18,7 +18,7 @@ public class DecreasingUnitPoolMethod
 	public DecreasingUnitPoolMethod(ArrayList<Unit> pool)
 	{
 		pool_ = pool;
-		groupSize_ = 3; //TODO change for all groupsizes
+		groupSize_ = 3; //TODO change for all group sizes
 	}
 	
 	/**
@@ -69,3 +69,4 @@ public class DecreasingUnitPoolMethod
 		return happiest;
 	}
 }
+/* WORKING */
