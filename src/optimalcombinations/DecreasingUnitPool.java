@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 /**
  * @author Pavel Khokhlov
+ * @author jackprescott
  */
 
 public class DecreasingUnitPool
@@ -225,6 +226,6 @@ public class DecreasingUnitPool
 	{
 		private static final long serialVersionUID = -8560120916174900757L;
 		// ask to either include remaining units in the existing groups 
-		// or create new group wiht the remaining units
+		// or create new group with the remaining units
 	}
 }
