@@ -73,11 +73,11 @@ public class Group
 				
 				if (tempPoints != -1) // if members_.get(x) is present in the positive connections of members_(y)
 				{
-					unitStrength += members_.get(0).getPosConnSize() - tempPoints; // adds the priority of the member to the groupscore
+					unitStrength += members_.get(0).getPosConnSize() - tempPoints; // adds the priority of the member to the unitStrength
 					                                                         // the higher the priority, the lower the index in posConns_
 				}															 
-				else if (members_.get(y).getNegConn().getName().equals(members_.get(x).getName())) // else if members_.get(x) is a negative connection of members_.get(y)
-				{
+				else if (members_.get(y).getNegConn().getName().equals(members_.get(x).getName())) // else if members_.get(x) is 
+				{																				   // a negative connection of members_.get(y)
 					unitStrength -= 3;
 				}
 				if(unitStrength<minimumUnitStrength_)
@@ -112,10 +112,10 @@ public class Group
 				if (tempPoints != -1) // if members_.get(x) is present in the positive connections of members_(y)
 				{
 					groupScore += members_.get(0).getPosConnSize() - tempPoints; // adds the priority of the member to the groupscore
-					                                                         // the higher the priority, the lower the index in posConns_
+					                                                             // the higher the priority, the lower the index in posConns_
 				}															 
-				else if (members_.get(y).getNegConn().getName().equals(members_.get(x).getName())) // else if members_.get(x) is a negative connection of members_.get(y)
-				{
+				else if (members_.get(y).getNegConn().getName().equals(members_.get(x).getName())) // else if members_.get(x) is 
+				{																				   // a negative connection of members_.get(y)
 					groupScore -= 3;
 				}
 			}

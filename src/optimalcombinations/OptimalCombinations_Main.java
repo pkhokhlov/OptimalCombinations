@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * @author jackprescott
  * @author Pavel Khokhlov
  */
-public class OptimalCombinations
+public class OptimalCombinations_Main
 {
 
 	@SuppressWarnings("unused")
