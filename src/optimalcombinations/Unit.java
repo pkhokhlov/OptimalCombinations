@@ -5,28 +5,73 @@
  */
 
 package optimalcombinations;
+
 import java.util.ArrayList;
 
 /**
- *
  * @author jackprescott
+ * @author Pavel Khokhlov
  */
-public class Unit {
-    int pcSize=3;
-    ArrayList<Unit> positiveConnections =  new ArrayList<Unit>();
-    Unit negativeConnection;
-    String name;
-    Unit(String n){
-        name=n;
-    }
-    void setPC(Unit[] u) {
-        for(Unit unit:u){
-            positiveConnections.add(unit);
-        }
-    }
-    
-    void setNC(Unit u) {
-        negativeConnection=u;
-    }
-    
+public class Unit
+{
+	String name_;
+	int posConnSize_;
+	
+	Unit negConn_; // TODO: include an arraylist of negative connections
+	ArrayList<Unit> posConns_ = new ArrayList<Unit>();
+	
+	public Unit(String name, int posConnSize)
+	{
+		name_ = name;
+		posConnSize_ = posConnSize;
+	}
+	
+	public Unit(String name)
+	{
+		name_ = name;
+		posConnSize_ = 3;
+	}
+	
+	public void setPosConns(Unit u1, Unit u2, Unit u3)
+	{
+		posConns_ = new ArrayList<Unit>();
+		posConns_.add(u1);
+		posConns_.add(u2);
+		posConns_.add(u3);
+	}
+	
+	public void setPosConns(Unit[] posConn)
+	{
+		posConns_ = new ArrayList<Unit>();
+		for (Unit unit : posConn)
+		{
+			posConns_.add(unit);
+		}
+	}
+
+	public void setNegConn(Unit negConn)
+	{
+		negConn_ = negConn;
+	}
+	
+	public String getName()
+	{
+		return name_;
+	}
+	
+	public ArrayList<Unit> getPosConns()
+	{
+		return posConns_;
+	}
+	
+	public Unit getNegConn()
+	{
+		return negConn_;
+	}
+	
+	public String toString()
+	{
+		return getName();
+	}
+
 }

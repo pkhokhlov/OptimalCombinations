@@ -5,19 +5,27 @@
  */
 
 package optimalcombinations;
+
 import java.util.ArrayList;
 
 /**
- *
  * @author jackprescott
  */
-public class CreateMasterList {
-    ArrayList<Unit> masterList = new ArrayList<Unit>();
-    
-    void add(Unit[] u){
-        for(Unit unit:u){
-            masterList.add(unit);
-        }
-    }
-    
+public class CreateMasterList
+{
+	ArrayList<Unit> masterList_ = new ArrayList<Unit>();
+
+	public void add(Unit[] u)
+	{
+		for (Unit unit : u)
+		{
+			masterList_.add(unit);
+		}
+	}
+	
+	public ArrayList<Unit> getMasterList()
+	{
+		return masterList_;
+	}
+
 }

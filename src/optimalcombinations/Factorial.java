@@ -12,15 +12,16 @@ package optimalcombinations;
  */
 
 import java.math.BigInteger;
-import java.util.Scanner;
 
-public class Factorial {
-
-   public static BigInteger factorial(int n) {
-       BigInteger fact = new BigInteger("1");
-       for (int i = 1; i <= n; i++) {
-           fact = fact.multiply(new BigInteger(i + ""));
-       }
-       return fact;
-   }
+public class Factorial
+{
+	public static BigInteger factorial(int n)
+	{
+		BigInteger fact = new BigInteger("1");
+		for (int i = 1; i <= n; i++)
+		{
+			fact = fact.multiply(new BigInteger(i + ""));
+		}
+		return fact;
+	}
 }
