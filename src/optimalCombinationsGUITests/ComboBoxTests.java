@@ -1,6 +1,7 @@
 package optimalCombinationsGUITests;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -16,20 +17,25 @@ public class ComboBoxTests
 {
 	public static void main(String[] args)
 	{
-		JFrame comboBoxFrame = new JFrame();
+		final JFrame comboBoxFrame = new JFrame();
+		comboBoxFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		final JComboBox<String> bookList = new JComboBox<String>();
 		bookList.addItem("Effective Java");
 		bookList.addItem("Head First Java");
 		bookList.addItem("Thinking in Java");
 		bookList.addItem("Java for Dummies");
-		bookList.remove(0);
+		bookList.setPreferredSize(new Dimension(20, 25));
 
 		// add to the parent container (e.g. a JFrame):
 		
 		comboBoxFrame.setLayout(new BorderLayout());
-		comboBoxFrame.add(bookList, BorderLayout.WEST);
-		JButton ok = new JButton();
+		comboBoxFrame.add(bookList, BorderLayout.CENTER);
+		JButton ok = new JButton("Ok");
+		comboBoxFrame.add(ok, BorderLayout.SOUTH);
+		comboBoxFrame.setSize(100, 100);
+		comboBoxFrame.pack();
+		comboBoxFrame.setVisible(true);
 		ok.addActionListener(new ActionListener()
 		{
 			@Override
@@ -37,12 +43,11 @@ public class ComboBoxTests
 			{
 				String selectedBook = (String) bookList.getSelectedItem();
 				System.out.println("You seleted the book: " + selectedBook);
+				comboBoxFrame.dispose();
 			}
 			
 		});
-		comboBoxFrame.add(ok, BorderLayout.SOUTH);
-		comboBoxFrame.pack();
-		comboBoxFrame.setVisible(true);
+		
 
 		// get the selected item:
 		
@@ -59,6 +64,12 @@ public class ComboBoxTests
 		
 		JComboBox<Unit> UnitBox = new JComboBox<Unit>();
 		UnitBox.addItem(A);
-		
+		UnitBox.addItem(B);
+		UnitBox.addItem(C);
+		UnitBox.addItem(D);
+		UnitBox.addItem(E);
+		UnitBox.addItem(F);
+		UnitBox.addItem(G);
+
 	}
 }
