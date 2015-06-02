@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class GroupSet
 {
-	ArrayList<Group> groupSet_;
+	ArrayList<Group> groupSet_ = new ArrayList<Group>();
 	int averageStrengthPerGroup_;
 	int minimumStrengthPerGroup_;
 	int minimumStrengthPerUnit_;
