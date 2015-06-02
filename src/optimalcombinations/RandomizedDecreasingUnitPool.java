@@ -69,10 +69,13 @@ public class RandomizedDecreasingUnitPool
 	
 	void GenerateGroupSets()
 	{
-		ArrayList<Unit> poolCopy=pool_;
+		ArrayList<Unit> poolCopy = new ArrayList<Unit>();
 		for(Group g : allGroups)
 		{
-			poolCopy=pool_;
+			for(Unit u : pool_)
+			{
+				poolCopy.add(u);
+			}
 			for(Unit u : g.getMembers())
 			{
 				poolCopy.remove(u);
