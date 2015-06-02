@@ -80,7 +80,7 @@ public class OptimalCombinations_Main
 		mList3.add(new Unit[]{ A, B, C, D, E, F, G, H, I, J});
 		
 		RandomizedDecreasingUnitPool test1 = new RandomizedDecreasingUnitPool(mList1.getMasterList(), 3);
-		GroupSet strongest1 = test1.findStrongestGroupSet(0, 0);
+		GroupSet strongest1 = test1.findStrongestGroupSet(-100, -100);
 		System.out.println(strongest1.toString());
 
 		/*DecreasingUnitPool test1 = new DecreasingUnitPool(mList1.getMasterList(), 3);
