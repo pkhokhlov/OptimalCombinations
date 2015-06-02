@@ -8,42 +8,43 @@ public class GroupSet
 	int averageStrengthPerGroup_;
 	int minimumStrengthPerGroup_;
 	int minimumStrengthPerUnit_;
-	int numberOfGroups_=0;
+	int numberOfGroups_ = 0;
 	
-	GroupSet()
+	public GroupSet()
 	{
-		
+		groupSet_ = new ArrayList<Group>();
 	}
 	
-	GroupSet(Group[] groups)
+	public GroupSet(Group[] groups)
 	{
+		groupSet_ = new ArrayList<Group>();
 		for (Group g : groups)
 		{
 			groupSet_.add(g);
 		}
 	}
 	
-	void add(Group g)
+	public void add(Group g)
 	{
 		groupSet_.add(g);
 	}
 	
-	void remove(Group g)
+	public void remove(Group g)
 	{
 		groupSet_.remove(g);
 	}
 	
-	int size()
+	public int size()
 	{
 		return groupSet_.size();
 	}
 	
-	Group get(int i)
+	public Group get(int i)
 	{
 		return groupSet_.get(i);
 	}
 	
-	void findGroupStatistics()
+	public void findGroupStatistics()
 	{
 		int totalStrength=0;
 		minimumStrengthPerGroup_=2147483647;
@@ -68,18 +69,23 @@ public class GroupSet
 		averageStrengthPerGroup_=totalStrength/numberOfGroups_;
 	}
 	
-	int getAverageStrengthPerGroup()
+	public int getAverageStrengthPerGroup()
 	{
 		return averageStrengthPerGroup_;
 	}
 	
-	int getMinimumStrengthPerGroup()
+	public int getMinimumStrengthPerGroup()
 	{
 		return minimumStrengthPerGroup_;
 	}
 	
-	int getMinimumStrengthPerUnit()
+	public int getMinimumStrengthPerUnit()
 	{
 		return minimumStrengthPerUnit_;
+	}
+	
+	public String toString()
+	{
+		return groupSet_.toString();
 	}
 }
