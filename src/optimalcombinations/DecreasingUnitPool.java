@@ -90,7 +90,7 @@ public class DecreasingUnitPool
 		if(pool_.size() < groupSize_)
 			throw new inadequatePoolSizeException();
 		
-		int highestScore = 0;
+		int highestScore = -100000;
 		for(int a = 0; a < pool_.size() - 4; a++)
 		{
 			for(int b = a + 1; b < pool_.size() - 3; b++)
