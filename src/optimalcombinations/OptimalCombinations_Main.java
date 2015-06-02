@@ -14,10 +14,10 @@ import java.util.ArrayList;
  * @author jackprescott
  * @author Pavel Khokhlov
  */
+@SuppressWarnings("unused")
 public class OptimalCombinations_Main
 {
 
-	@SuppressWarnings("unused")
 	public static void main(String[] args)
 	{
 		// TODO code application logic here
@@ -78,8 +78,12 @@ public class OptimalCombinations_Main
 		mList1.add(new Unit[]{ A, B, C, D, E, F, G, H, I, J});
 		mList2.add(new Unit[]{ A, B, C, D, E, F, G, H, I, J});
 		mList3.add(new Unit[]{ A, B, C, D, E, F, G, H, I, J});
+		
+		/*RandomizedDecreasingUnitPool test1 = new RandomizedDecreasingUnitPool(mList1.getMasterList(), 3);
+		GroupSet strongest1 = test1.findStrongestGroupSet(0, 0);
+		System.out.println(strongest1.toString());*/
 
-		DecreasingUnitPool test1 = new DecreasingUnitPool(mList1.getMasterList(), 3);
+		/*DecreasingUnitPool test1 = new DecreasingUnitPool(mList1.getMasterList(), 3);
 		DecreasingUnitPool test2 = new DecreasingUnitPool(mList2.getMasterList(), 4);
 		DecreasingUnitPool test3 = new DecreasingUnitPool(mList3.getMasterList(), 5);
 
@@ -90,7 +94,7 @@ public class OptimalCombinations_Main
 		System.out.println(strongest2.toString());
 		
 		GroupSet strongest3 = test3.findStrongestGroups();
-		System.out.println(strongest3.toString());
+		System.out.println(strongest3.toString());*/
 		
 		/* OUTPUT
 		 *
@@ -98,7 +102,6 @@ public class OptimalCombinations_Main
 		 * [{G, H, I, J, F}, {A, B, C, D, E}]
 		 * [{D, G, H, I, J}, {A, B, C, E, F}]
 		 */
-		
 		
 		
 		
@@ -110,7 +113,11 @@ public class OptimalCombinations_Main
 		 */
 		// CombinationTester ct= new CombinationTester(mList.masterList_);
 		// System.out.println(ct.getBestCombo());
-
+		//Override Commands:
+		//cd /Users/jackprescott/Documents/workspace/OptimalCombinations
+		//git fetch --all
+		//git reset --hard origin/master
+		
 	}
 
 }
