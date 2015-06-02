@@ -6,104 +6,58 @@ import optimalcombinations.DecreasingUnitPool.inadequatePoolSizeException;
 
 public class RandomizedDecreasingUnitPool
 {
-	Group best_;
-	int groupSize_;
-	int iterations_ = 0;
-	
 	ArrayList<Unit> pool_;
-	ArrayList<Group> strongestGroups_;
+	int groupSize_;
+	ArrayList<GroupSet> randomizedSets = new ArrayList<GroupSet>();
+	ArrayList<Group> allGroups = new ArrayList<Group>();
 	
-	public RandomizedDecreasingUnitPool(ArrayList<Unit> pool, int groupSize)
+	RandomizedDecreasingUnitPool(ArrayList<Unit> pool, int groupSize)
 	{
 		pool_ = pool;
 		groupSize_ = groupSize;
-	}
-	
-	/**
-	 * @precondition: the pool is not empty
-	 * @postcondition: best_ contains the strongest group possible from pool_
-	 */
-	public void findStrongestGroupSize3() throws inadequatePoolSizeException
-	{
-		if(pool_.size() < groupSize_)
-			throw new inadequatePoolSizeException();
-		
-		int highestScore = 0;
-		for(int a = 0; a < pool_.size() - 2; a++)
+		if(groupSize==3)
 		{
-			for(int b = a + 1; b < pool_.size() - 1; b++)
+			for(int a = 0; a < pool_.size() - 2; a++)
 			{
-				for(int c = b + 1; c < pool_.size(); c++)
+				for(int b = a + 1; b < pool_.size() - 1; b++)
 				{
-					Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c)}); // only works for groups of size 3
-					int gScore = temp.getGroupScore();
-					if(gScore > highestScore)
+					for(int c = b + 1; c < pool_.size(); c++)
 					{
-						highestScore = gScore;
-						best_ = temp;
+						allGroups.add(new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c)}));
 					}
 				}
 			}
 		}
-	}
-	
-	/**
-	 * @precondition: the pool is not empty
-	 * @postcondition: best_ contains the strongest group possible from pool_
-	 */
-	public void findStrongestGroupSize4() throws inadequatePoolSizeException
-	{
-		if(pool_.size() < groupSize_)
-			throw new inadequatePoolSizeException();
-		
-		int highestScore = 0;
-		for(int a = 0; a < pool_.size() - 3; a++)
+		if(groupSize==4)
 		{
-			for(int b = a + 1; b < pool_.size() - 2; b++)
+			for(int a = 0; a < pool_.size() - 3; a++)
 			{
-				for(int c = b + 1; c < pool_.size() - 1; c++)
+				for(int b = a + 1; b < pool_.size() - 2; b++)
 				{
-					for(int d = c + 1; d < pool_.size(); d++)
+					for(int c = b + 1; c < pool_.size() - 1; c++)
 					{
-						Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d)});
-						int gScore = temp.getGroupScore();
-						if(gScore > highestScore)
+						for(int d = c + 1; d < pool_.size(); d++)
 						{
-							highestScore = gScore;
-							best_ = temp;
+							allGroups.add(new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d)}));
+							
 						}
 					}
 				}
 			}
 		}
-	}
-	
-	/**
-	 * @precondition: the pool is not empty
-	 * @postcondition: best_ contains the strongest group possible from pool_
-	 */
-	public void findStrongestGroupSize5() throws inadequatePoolSizeException
-	{
-		if(pool_.size() < groupSize_)
-			throw new inadequatePoolSizeException();
-		
-		int highestScore = 0;
-		for(int a = 0; a < pool_.size() - 4; a++)
+		if(groupSize==5)
 		{
-			for(int b = a + 1; b < pool_.size() - 3; b++)
+			for(int a = 0; a < pool_.size() - 4; a++)
 			{
-				for(int c = b + 1; c < pool_.size() - 2; c++)
+				for(int b = a + 1; b < pool_.size() - 3; b++)
 				{
-					for(int d = c + 1; d < pool_.size() - 1; d++)
+					for(int c = b + 1; c < pool_.size() - 2; c++)
 					{
-						for(int e = d + 1; e < pool_.size(); e++)
+						for(int d = c + 1; d < pool_.size() - 1; d++)
 						{
-							Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e)});
-							int gScore = temp.getGroupScore();
-							if(gScore > highestScore)
+							for(int e = d + 1; e < pool_.size(); e++)
 							{
-								highestScore = gScore;
-								best_ = temp;
+								allGroups.add(new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e)}));
 							}
 						}
 					}
@@ -111,112 +65,37 @@ public class RandomizedDecreasingUnitPool
 			}
 		}
 	}
+
 	
-	/**
-	 * pool_.remove(...) works because the pool_ is partly made of the units within best_
-	 */
-	public void removeFromPool()
+	void GenerateGroupSets()
 	{
-		for(int i = 0; i < best_.getMembers().size(); i++)
+		ArrayList<Unit> poolCopy=pool_;
+		for(Group g : allGroups)
 		{
-			pool_.remove(best_.getMembers().get(i));
-		}
-	}
-	
-	/**
-	 * @precondition: inadequatePoolSizeException is thrown
-	 * @postcondition: the remaining units are inserted into the group that would be strongest with the remaining units
-	 * @param remaining
-	 */
-	public void insertIntoOptimalGroup(ArrayList<Unit> remaining)
-	{
-		for(int i = 0; i < remaining.size(); i++)
-		{
-			int strongestIndex = 0;
-			int highestScore = Integer.MIN_VALUE;
-			for(int j = 0; j < strongestGroups_.size(); j++)
+			poolCopy=pool_;
+			for(Unit u : g.getMembers())
 			{
-				if(strongestGroups_.get(j).getSize() == groupSize_)
-				{
-					strongestGroups_.get(j).addUnit(remaining.get(i)); // adds the unit in question to the group
-					int tempScore = strongestGroups_.get(j).getGroupScore();
-					if(tempScore > highestScore) // tests if the newly formed group has the highest score out of the others
-					{
-						highestScore = tempScore; // if it does, the index and score is kept
-						strongestIndex = j;
-					}
-					strongestGroups_.get(j).removeUnit(remaining.get(i)); // the unit in question is removed
-				}
+				poolCopy.remove(u);
 			}
-			strongestGroups_.get(strongestIndex).addUnit(remaining.get(i)); // the strongest resulting group from adding the unit from remaining is added
+			DecreasingUnitPool DUP = new DecreasingUnitPool(poolCopy, groupSize_);
+			GroupSet temp = DUP.findStrongestGroups();
+			temp.add(g);
+			randomizedSets.add(temp);
 		}
-		pool_ = new ArrayList<Unit>(); // TODO: make sure that the remaining people that are not included in remaining are not deleted
 	}
 	
-	public ArrayList<Group> findStrongestGroups()
-	{
-		strongestGroups_ = new ArrayList<Group>();
-		switch(groupSize_)
+	GroupSet findStrongestGroupSet(int minPerUnit, int minPerGroup, int avgPerGroup){
+		GenerateGroupSets();
+		int averageStrengthBest=Integer.MIN_VALUE;
+		GroupSet bestSet= new GroupSet();
+		for (GroupSet s: randomizedSets )
 		{
-			case 3:
-				while(pool_.size() > 0)
-				{
-					try
-					{
-						findStrongestGroupSize3();
-					} 
-					catch (inadequatePoolSizeException e)
-					{
-						insertIntoOptimalGroup(pool_);
-						e.printStackTrace();
-						break;
-					}
-					strongestGroups_.add(best_);
-					removeFromPool();
-				}
-				break;
-			case 4:
-				while(pool_.size() > 0)
-				{
-					try
-					{
-						findStrongestGroupSize4();
-					} 
-					catch (inadequatePoolSizeException e)
-					{
-						insertIntoOptimalGroup(pool_);
-						e.printStackTrace();
-						break;
-					}
-					strongestGroups_.add(best_);
-					removeFromPool();
-				}
-				break;
-			case 5:
-				while(pool_.size() > 0)
-				{
-					try
-					{
-						findStrongestGroupSize5();
-					} 
-					catch (inadequatePoolSizeException e)
-					{
-						insertIntoOptimalGroup(pool_);
-						e.printStackTrace();
-						break;
-					}
-					strongestGroups_.add(best_);
-					removeFromPool();
-				}
-				break;
+			if(s.getAverageStrengthPerGroup()>averageStrengthBest && s.getMinimumStrengthPerGroup()> minPerGroup && s.getMinimumStrengthPerUnit()>minPerUnit)
+			{
+				averageStrengthBest=s.getAverageStrengthPerGroup();
+				bestSet=s;
+			}
 		}
-		return strongestGroups_;
-	}
-	
-	class inadequatePoolSizeException extends Exception
-	{
-		private static final long serialVersionUID = -8560120916174900757L;
-		// ask to either include remaining units in the existing groups 
-		// or create new group with the remaining units
+		return bestSet;
 	}
 }
