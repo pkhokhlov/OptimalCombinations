@@ -83,13 +83,13 @@ public class OptimalCombinations_Main
 		DecreasingUnitPool test2 = new DecreasingUnitPool(mList2.getMasterList(), 4);
 		DecreasingUnitPool test3 = new DecreasingUnitPool(mList3.getMasterList(), 5);
 
-		ArrayList<Group> strongest1 = test1.findStrongestGroups();
+		GroupSet strongest1 = test1.findStrongestGroups();
 		System.out.println(strongest1.toString());
 		
-		ArrayList<Group> strongest2 = test2.findStrongestGroups();
+		GroupSet strongest2 = test2.findStrongestGroups();
 		System.out.println(strongest2.toString());
 		
-		ArrayList<Group> strongest3 = test3.findStrongestGroups();
+		GroupSet strongest3 = test3.findStrongestGroups();
 		System.out.println(strongest3.toString());
 		
 		/* OUTPUT
