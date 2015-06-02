@@ -84,7 +84,7 @@ public class RandomizedDecreasingUnitPool
 		}
 	}
 	
-	GroupSet findStrongestGroupSet(int minPerUnit, int minPerGroup, int avgPerGroup){
+	GroupSet findStrongestGroupSet(int minPerUnit, int minPerGroup){
 		GenerateGroupSets();
 		int averageStrengthBest=Integer.MIN_VALUE;
 		GroupSet bestSet= new GroupSet();
