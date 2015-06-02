@@ -84,6 +84,7 @@ public class RandomizedDecreasingUnitPool
 			GroupSet temp = DUP.findStrongestGroups();
 			temp.add(g);
 			randomizedSets.add(temp);
+			System.out.println(temp.toString());
 		}
 	}
 	
