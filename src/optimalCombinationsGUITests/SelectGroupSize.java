@@ -66,5 +66,16 @@ public class SelectGroupSize extends JDialog
 		JButton btnBuildRooms = new JButton("Build Rooms");
 		btnBuildRooms.setBounds(341, 239, 91, 23);
 		getContentPane().add(btnBuildRooms);
+		btnBuildRooms.addActionListener(new ActionListener()
+		{
+
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 	}
 }

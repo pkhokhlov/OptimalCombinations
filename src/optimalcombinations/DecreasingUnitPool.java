@@ -6,7 +6,13 @@ import java.util.ArrayList;
  * @author Pavel Khokhlov
  * @author jackprescott
  */
-
+/**
+ * top 5, 
+ * TODO: add functionality where one student CANNOT be with another, not negconn
+ *     - troublemaker factor
+ *     
+ * 
+ */
 public class DecreasingUnitPool
 {
 	Group best_;
@@ -39,7 +45,7 @@ public class DecreasingUnitPool
 				for(int c = b + 1; c < pool_.size(); c++)
 				{
 					Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c)});
-					int gScore = temp.getGroupScore();
+					int gScore = temp.getGroupScoreWithNull();
 					if(gScore > highestScore)
 					{
 						highestScore = gScore;
@@ -69,7 +75,7 @@ public class DecreasingUnitPool
 					for(int d = c + 1; d < pool_.size(); d++)
 					{
 						Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d)});
-						int gScore = temp.getGroupScore();
+						int gScore = temp.getGroupScoreWithNull();
 						if(gScore > highestScore)
 						{
 							highestScore = gScore;
@@ -102,7 +108,7 @@ public class DecreasingUnitPool
 						for(int e = d + 1; e < pool_.size(); e++)
 						{
 							Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e)});
-							int gScore = temp.getGroupScore();
+							int gScore = temp.getGroupScoreWithNull();
 							if(gScore > highestScore)
 							{
 								highestScore = gScore;
@@ -145,9 +151,9 @@ public class DecreasingUnitPool
 			{
 				if(((Group) strongestGroups_.get(j)).getSize() == groupSize_)
 				{
-					int groupScore = ((Group) strongestGroups_.get(j)).getGroupScore();
+					int groupScore = ((Group) strongestGroups_.get(j)).getGroupScoreWithNull();
 					strongestGroups_.get(j).addUnit(remaining.get(i)); // adds the unit in question to the group
-					int tempScore = strongestGroups_.get(j).getGroupScore();
+					int tempScore = strongestGroups_.get(j).getGroupScoreWithNull();
 					int scoreDif = tempScore - groupScore;
 					if(scoreDif > highestScoreDif) // tests if the newly formed group has the highest score out of the others
 					{
@@ -177,7 +183,6 @@ public class DecreasingUnitPool
 					catch (inadequatePoolSizeException e)
 					{
 						insertIntoOptimalGroup(pool_);
-						//e.printStackTrace();
 						break;
 					}
 					strongestGroups_.add(best_);
@@ -194,7 +199,6 @@ public class DecreasingUnitPool
 					catch (inadequatePoolSizeException e)
 					{
 						insertIntoOptimalGroup(pool_);
-						//e.printStackTrace();
 						break;
 					}
 					strongestGroups_.add(best_);
@@ -211,7 +215,6 @@ public class DecreasingUnitPool
 					catch (inadequatePoolSizeException e)
 					{
 						insertIntoOptimalGroup(pool_);
-						//e.printStackTrace();
 						break;
 					}
 					strongestGroups_.add(best_);
@@ -225,7 +228,5 @@ public class DecreasingUnitPool
 	class inadequatePoolSizeException extends Exception
 	{
 		private static final long serialVersionUID = -8560120916174900757L;
-		// ask to either include remaining units in the existing groups 
-		// or create new group with the remaining units
 	}
 }

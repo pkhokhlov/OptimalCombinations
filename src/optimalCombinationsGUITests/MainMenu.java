@@ -19,7 +19,9 @@ import java.awt.Font;
 /**
  * 
  * @author Pavel Khokhlov
- * 
+ * strunk and white
+ * TODO: column 1 student, column 2 student preferences
+ * TODO: google forums functionality
  */
 public class MainMenu extends JDialog
 {
@@ -229,6 +231,7 @@ public class MainMenu extends JDialog
 	public static DefaultComboBoxModel<Unit> copyComboBoxModel(DefaultComboBoxModel<Unit> toBeCopied)
 	{
 		DefaultComboBoxModel<Unit> result = new DefaultComboBoxModel<Unit>();
+		result.addElement(null);
 		for(int i = 0; i < toBeCopied.getSize(); i++)
 		{
 			result.addElement(toBeCopied.getElementAt(i));

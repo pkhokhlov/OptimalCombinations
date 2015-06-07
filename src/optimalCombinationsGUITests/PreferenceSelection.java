@@ -1,7 +1,5 @@
 package optimalCombinationsGUITests;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,10 +8,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
@@ -26,9 +21,8 @@ import optimalcombinations.Unit;
  */
 public class PreferenceSelection extends JDialog
 {
-	/**
-	 * Create the dialog.
-	 */
+	private static final long serialVersionUID = -665010428935262459L;
+
 	public PreferenceSelection(final Unit u, final DefaultListModel<Unit> uneditedStudents, 
 			                           final DefaultListModel<Unit> editedStudents, 
 			                           DefaultComboBoxModel<Unit> allStudents)
@@ -36,7 +30,7 @@ public class PreferenceSelection extends JDialog
 		setTitle("DC Trip Room Generator");
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(null);
-		
+		// creates all the lists to be used in the combobox, copies must be made because of how objects are stored in comboBoxModels
 		DefaultComboBoxModel<Unit> desiredComboBox1 = MainMenu.copyComboBoxModel(allStudents);
 		DefaultComboBoxModel<Unit> desiredComboBox2 = MainMenu.copyComboBoxModel(allStudents);
 		DefaultComboBoxModel<Unit> desiredComboBox3 = MainMenu.copyComboBoxModel(allStudents);
@@ -57,7 +51,7 @@ public class PreferenceSelection extends JDialog
 		final JComboBox<Unit> undesiredBox1 = new JComboBox<Unit>(undesiredComboBox1);
 		undesiredBox1.setBounds(212, 160, 163, 22);
 		getContentPane().add(undesiredBox1);
-		
+		// if the preferences are already set, it displays the set preferences
 		if(u.getPosConns().size() != 0)
 		{
 			desiredBox1.setSelectedIndex(desiredComboBox1.getIndexOf(u.getPosConns().get(0)));
@@ -103,14 +97,6 @@ public class PreferenceSelection extends JDialog
 		JButton btnOK = new JButton("OK");
 		btnOK.setBounds(341, 239, 91, 23);
 		getContentPane().add(btnOK);
-		/* parameters: unit, unedited, edited
-		 * 1. Open the window
-		 * 2. if all choices are selected -> remove from uneditedStudents and put into editedStudents
-		 * 3. if not all choices are selected -> popup saying not all are selected -> could continue could redo -> 
-		 *  if continue, remove from uneditedStudents and put into editedStudents
-		 * 4. if none are selected - popup saying none are selected force to fill or cancel
-		 * 
-		 */
 		btnOK.addActionListener(new ActionListener()
 		{
 			@Override
@@ -119,23 +105,31 @@ public class PreferenceSelection extends JDialog
 				Unit desired1 = desiredBox1.getItemAt(desiredBox1.getSelectedIndex());
 				Unit desired2 = desiredBox2.getItemAt(desiredBox2.getSelectedIndex());
 				Unit desired3 = desiredBox3.getItemAt(desiredBox3.getSelectedIndex());
-				Unit undesired1 = undesiredBox1.getItemAt(undesiredBox1.getSelectedIndex());
-				if(desired1 != desired2 && desired2 != desired3 && desired3 != undesired1)
+				Unit undesired1 = undesiredBox1.getItemAt(undesiredBox1.getSelectedIndex());	
+				
+				// look for duplicates of non-nulls
+				if(choicesValid(desired1, desired2, desired3, undesired1)) // 3 & 4
 				{
-					u.setPosConns(desired1, desired2, desired3);
-					u.setNegConn(undesired1);
-					if(uneditedStudents.contains(u) && !editedStudents.contains(u))
-					{
-						uneditedStudents.removeElement(u);
-						editedStudents.addElement(u);
-					}
-					dispose();
-				}
-				else if(!(desired1 != desired2 && desired2 != desired3 && desired3 != undesired1))
-				{
-					JFrame frame = new JFrame();
-					JOptionPane.showMessageDialog(frame,
+					JOptionPane.showMessageDialog(new JFrame(),
 							"Error: you have duplicate choices selected.");
+				}
+				else // there are no duplicates unless they are null
+				{   
+					if(desired1 == null || desired2 == null || desired3 == null)
+					{
+						int n = showEmptyPrefsDialog();
+						if(n != 1)
+						{
+							u.setPosConns(desired1, desired2, desired3);
+							u.setNegConn(undesired1);
+							if(uneditedStudents.contains(u) && !editedStudents.contains(u))
+							{
+								uneditedStudents.removeElement(u);
+								editedStudents.addElement(u);
+							}
+							dispose();
+						}
+				    }
 				}
 			}
 		});
@@ -143,5 +137,34 @@ public class PreferenceSelection extends JDialog
 		JLabel lblStudentsPreferences = new JLabel(u + "'s Preferences");
 		lblStudentsPreferences.setBounds(155, 23, 113, 14);
 		getContentPane().add(lblStudentsPreferences);
+	}
+	
+	public int showEmptyPrefsDialog()
+	{
+		Object[] options = {"Yes", "No"};
+		int n = JOptionPane.showOptionDialog(new JFrame(),
+	    "One or more preferences are not set.\n"
+	    + "Do you want to continue with empty preferences?",
+	    "DC Room Generator",
+	    JOptionPane.YES_NO_OPTION,
+	    JOptionPane.QUESTION_MESSAGE,
+	    null,     //do not use a custom Icon
+	    options,  //the titles of buttons
+	    options[0]); //default button title
+		
+		return n;
+	}
+	
+	/**
+	 * TODO: find simpler logic
+	 */	
+	public boolean choicesValid(Unit desired1, Unit desired2, Unit desired3, Unit undesired1)
+	{
+		return    ((desired1 == desired2 && desired1 != null && desired2 != null) // 1 && 2
+				|| (desired1 == desired3 && desired1 != null && desired3 != null) // 1 && 3
+				|| (desired1 == undesired1 && desired1 != null && undesired1 != null) // 1 && 4
+				|| (desired3 == desired2 && desired3 != null && desired2 != null) // 2 && 3
+				|| (desired2 == undesired1 && desired2 != null && undesired1 != null) // 2 & 4
+				|| (desired3 == undesired1 && desired3 != null && undesired1 != null)); // 3 & 4
 	}
 }

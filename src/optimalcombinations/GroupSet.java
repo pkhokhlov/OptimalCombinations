@@ -88,4 +88,26 @@ public class GroupSet
 	{
 		return groupSet_.toString();
 	}
+	
+	public String getGroupScores()
+	{
+		String s = "{";
+		for(int i = 0; i < groupSet_.size() - 1; i++)
+		{
+			s = s + groupSet_.get(i).getGroupScore() + ", ";
+		}
+		s = s + groupSet_.get(groupSet_.size() - 1).getGroupScore() + "}";
+		return s;
+	}
+	
+	public String getGroupScoresWithNull()
+	{
+		String s = "{";
+		for(int i = 0; i < groupSet_.size() - 1; i++)
+		{
+			s = s + groupSet_.get(i).getGroupScoreWithNull() + ", ";
+		}
+		s = s + groupSet_.get(groupSet_.size() - 1).getGroupScoreWithNull() + "}";
+		return s;
+	}
 }
