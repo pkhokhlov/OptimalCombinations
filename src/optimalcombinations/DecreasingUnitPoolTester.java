@@ -64,19 +64,20 @@ public class DecreasingUnitPoolTester
 		DecreasingUnitPool test3 = new DecreasingUnitPool(mList3.getMasterList(), 5);
 
 		GroupSet strongest1 = test1.findStrongestGroups();
-		System.out.println("Groups of size 3: " + strongest1.toString() + " scores: " + strongest1.getGroupScoresWithNull());
+		System.out.println("Groups of size 3: " + strongest1.toString() + " scores: " + strongest1.getGroupScores());
 
 		GroupSet strongest2 = test2.findStrongestGroups();
-		System.out.println("Groups of size 4: " + strongest2.toString() + " scores: " + strongest2.getGroupScoresWithNull());
+		System.out.println("Groups of size 4: " + strongest2.toString() + " scores: " + strongest2.getGroupScores());
 		
 		GroupSet strongest3 = test3.findStrongestGroups();
-		System.out.println("Groups of size 5: " + strongest3.toString() + " scores: " + strongest3.getGroupScoresWithNull());
+		System.out.println("Groups of size 5: " + strongest3.toString() + " scores: " + strongest3.getGroupScores());
 		
 		Group g1 = new Group(new Unit[]{G, H, I, J});
-		System.out.println("G1 With Null: "  + g1.getGroupScoreWithNullPrint());
+		System.out.println("G1 With Null: "  + g1.getGroupScorePrint());
+		
 		/*
 		Group g2 = new Group(new Unit[]{A, B, C, D, E});
-		System.out.println("G2 With Null: "  + g2.getGroupScoreWithNullPrint());
+		System.out.println("G2 With Null: "  + g2.getGroupScorePrint());
 		*/
 	}
 }

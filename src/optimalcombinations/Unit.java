@@ -17,7 +17,7 @@ public class Unit
 	String name_;
 	int posConnSize_;
 	
-	Unit negConn_; // TODO: include an arraylist of negative connections
+	Unit negConn_; /* Ribaudo noted that he does not ask for negative connections. */
 	ArrayList<Unit> posConns_ = new ArrayList<Unit>();
 	
 	public Unit(String name)

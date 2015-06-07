@@ -46,27 +46,27 @@ public class GroupSet
 	
 	public void findGroupStatistics()
 	{
-		int totalStrength=0;
-		minimumStrengthPerGroup_=2147483647;
-		minimumStrengthPerUnit_=2147483647;
+		int totalStrength = 0;
+		minimumStrengthPerGroup_ = Integer.MAX_VALUE;
+		minimumStrengthPerUnit_ = Integer.MAX_VALUE;
 
 		for(Group g : groupSet_)
 		{
-			totalStrength+=g.getGroupScore();
+			totalStrength += g.getGroupScore();
 			
-			if(minimumStrengthPerGroup_>g.getGroupScore())
+			if(minimumStrengthPerGroup_ > g.getGroupScore())
 			{
-				minimumStrengthPerGroup_=g.getGroupScore();
+				minimumStrengthPerGroup_ = g.getGroupScore();
 			}
 			
-			if(minimumStrengthPerUnit_>g.getMinimumUnitStrength())
+			if(minimumStrengthPerUnit_ > g.getMinimumUnitStrength())
 			{
-				minimumStrengthPerUnit_=g.getMinimumUnitStrength();
+				minimumStrengthPerUnit_ = g.getMinimumUnitStrength();
 			}
 			
 		}
-		numberOfGroups_=size();
-		averageStrengthPerGroup_=totalStrength/numberOfGroups_;
+		numberOfGroups_ = size();
+		averageStrengthPerGroup_ = totalStrength / numberOfGroups_;
 	}
 	
 	public int getAverageStrengthPerGroup()
@@ -97,17 +97,6 @@ public class GroupSet
 			s = s + groupSet_.get(i).getGroupScore() + ", ";
 		}
 		s = s + groupSet_.get(groupSet_.size() - 1).getGroupScore() + "}";
-		return s;
-	}
-	
-	public String getGroupScoresWithNull()
-	{
-		String s = "{";
-		for(int i = 0; i < groupSet_.size() - 1; i++)
-		{
-			s = s + groupSet_.get(i).getGroupScoreWithNull() + ", ";
-		}
-		s = s + groupSet_.get(groupSet_.size() - 1).getGroupScoreWithNull() + "}";
 		return s;
 	}
 }

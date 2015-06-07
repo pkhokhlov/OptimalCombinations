@@ -45,7 +45,7 @@ public class DecreasingUnitPool
 				for(int c = b + 1; c < pool_.size(); c++)
 				{
 					Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c)});
-					int gScore = temp.getGroupScoreWithNull();
+					int gScore = temp.getGroupScore();
 					if(gScore > highestScore)
 					{
 						highestScore = gScore;
@@ -75,7 +75,7 @@ public class DecreasingUnitPool
 					for(int d = c + 1; d < pool_.size(); d++)
 					{
 						Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d)});
-						int gScore = temp.getGroupScoreWithNull();
+						int gScore = temp.getGroupScore();
 						if(gScore > highestScore)
 						{
 							highestScore = gScore;
@@ -108,7 +108,7 @@ public class DecreasingUnitPool
 						for(int e = d + 1; e < pool_.size(); e++)
 						{
 							Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e)});
-							int gScore = temp.getGroupScoreWithNull();
+							int gScore = temp.getGroupScore();
 							if(gScore > highestScore)
 							{
 								highestScore = gScore;
@@ -151,9 +151,9 @@ public class DecreasingUnitPool
 			{
 				if(((Group) strongestGroups_.get(j)).getSize() == groupSize_)
 				{
-					int groupScore = ((Group) strongestGroups_.get(j)).getGroupScoreWithNull();
+					int groupScore = ((Group) strongestGroups_.get(j)).getGroupScore();
 					strongestGroups_.get(j).addUnit(remaining.get(i)); // adds the unit in question to the group
-					int tempScore = strongestGroups_.get(j).getGroupScoreWithNull();
+					int tempScore = strongestGroups_.get(j).getGroupScore();
 					int scoreDif = tempScore - groupScore;
 					if(scoreDif > highestScoreDif) // tests if the newly formed group has the highest score out of the others
 					{
