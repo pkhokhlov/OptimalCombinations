@@ -72,10 +72,12 @@ public class RandomizedDecreasingUnitPool
 		ArrayList<Unit> poolCopy = new ArrayList<Unit>();
 		for(Group g : allGroups_)
 		{
+			System.out.println(pool_);
 			for(Unit u : pool_)
 			{
 				poolCopy.add(u);
 			}
+			System.out.println(poolCopy);
 			for(Unit u : g.getMembers())
 			{
 				poolCopy.remove(u);
