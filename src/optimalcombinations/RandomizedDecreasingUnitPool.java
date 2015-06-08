@@ -8,8 +8,8 @@ public class RandomizedDecreasingUnitPool
 {
 	ArrayList<Unit> pool_;
 	int groupSize_;
-	ArrayList<GroupSet> randomizedSets = new ArrayList<GroupSet>();
-	ArrayList<Group> allGroups = new ArrayList<Group>();
+	ArrayList<GroupSet> randomizedSets_ = new ArrayList<GroupSet>();
+	ArrayList<Group> allGroups_ = new ArrayList<Group>();
 	
 	RandomizedDecreasingUnitPool(ArrayList<Unit> pool, int groupSize)
 	{
@@ -23,7 +23,7 @@ public class RandomizedDecreasingUnitPool
 				{
 					for(int c = b + 1; c < pool_.size(); c++)
 					{
-						allGroups.add(new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c)}));
+						allGroups_.add(new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c)}));
 					}
 				}
 			}
@@ -38,7 +38,7 @@ public class RandomizedDecreasingUnitPool
 					{
 						for(int d = c + 1; d < pool_.size(); d++)
 						{
-							allGroups.add(new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d)}));
+							allGroups_.add(new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d)}));
 							
 						}
 					}
@@ -57,7 +57,7 @@ public class RandomizedDecreasingUnitPool
 						{
 							for(int e = d + 1; e < pool_.size(); e++)
 							{
-								allGroups.add(new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e)}));
+								allGroups_.add(new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e)}));
 							}
 						}
 					}
@@ -70,7 +70,7 @@ public class RandomizedDecreasingUnitPool
 	void GenerateGroupSets()
 	{
 		ArrayList<Unit> poolCopy = new ArrayList<Unit>();
-		for(Group g : allGroups)
+		for(Group g : allGroups_)
 		{
 			for(Unit u : pool_)
 			{
@@ -83,8 +83,7 @@ public class RandomizedDecreasingUnitPool
 			DecreasingUnitPool DUP = new DecreasingUnitPool(poolCopy, groupSize_);
 			GroupSet temp = DUP.findStrongestGroups();
 			temp.add(g);
-			randomizedSets.add(temp);
-			System.out.println(temp.toString());
+			randomizedSets_.add(temp);
 		}
 	}
 	
@@ -92,7 +91,7 @@ public class RandomizedDecreasingUnitPool
 		GenerateGroupSets();
 		int averageStrengthBest=Integer.MIN_VALUE;
 		GroupSet bestSet= new GroupSet();
-		for (GroupSet s: randomizedSets )
+		for (GroupSet s: randomizedSets_ )
 		{
 			if(s.getAverageStrengthPerGroup()>averageStrengthBest && s.getMinimumStrengthPerGroup()> minPerGroup && s.getMinimumStrengthPerUnit()>minPerUnit)
 			{
