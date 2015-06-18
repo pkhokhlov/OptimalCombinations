@@ -1,18 +1,26 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright 2015 Pavel Khokhlov <pkhokhlov@hotmail.com>
+ * 				  Jack Prescott <jackbprescott@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-package optimalcombinations;
+package com.optimalCombinations.algo;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
-/**
- *
- * @author jackprescott
- * @author Pavel Khokhlov
- */
 public class Group
 {
 	ArrayList<Unit> members_ = new ArrayList<Unit>();
@@ -55,7 +63,7 @@ public class Group
 	}
 	
 	/**
-	 * This method calculates the group strength.
+	 * This function calculates the group strength.
 	 * This function works for any number of positive connections.
 	 * This function works if the negative connection is null.
 	 * @return groupScore
@@ -198,8 +206,24 @@ public class Group
 		return groupScore;
 	}
 	
-
+	/**
+	 * This function puts the members of the group in alphabetical order. 
+	 */
+	public void alphabetize()
+	{
+		Collections.sort(members_, new Comparator<Unit>() 
+		{
+	        @Override
+	        public int compare(final Unit unit1, final Unit unit2) 
+	        {
+	            return unit1.getName().compareTo(unit2.getName());
+	        }
+		});
+	}
 	
+	/**
+	 * This function returns the string representation of the group. The group score is included
+	 */
 	public String toString()
 	{
 		String result = "{";
@@ -207,7 +231,7 @@ public class Group
 		{
 			result = result + members_.get(i) + ", ";
 		}
-		return  result + members_.get(members_.size() - 1) + "}"; 
+		return  result + members_.get(members_.size() - 1) + "}" + "(" + getGroupScore() + ")"; 
 	}
 
 	/**

@@ -1,4 +1,21 @@
-package optimalCombinationsGUITests;
+/**
+ * Copyright 2015 Pavel Khokhlov <pkhokhlov@hotmail.com>
+ * 				  Jack Prescott <jackbprescott@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.optimalCombinations.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,26 +28,22 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
-import optimalcombinations.Unit;
+import com.optimalCombinations.algo.Unit;
 
-/**
- * 
- * @author Pavel Khokhlov
- *
- */
 public class PreferenceSelection extends JDialog
 {
 	private static final long serialVersionUID = -665010428935262459L;
 
 	public PreferenceSelection(final Unit u, final DefaultListModel<Unit> uneditedStudents, 
-			                           final DefaultListModel<Unit> editedStudents, 
-			                           DefaultComboBoxModel<Unit> allStudents)
+		                           final DefaultListModel<Unit> editedStudents, 
+		                           DefaultComboBoxModel<Unit> allStudents)
 	{
 		setTitle("DC Trip Room Generator");
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(null);
-		// creates all the lists to be used in the combobox, copies must be made because of how objects are stored in comboBoxModels
+		// creates all the lists to be used in the combobox
 		DefaultComboBoxModel<Unit> desiredComboBox1 = MainMenu.copyComboBoxModel(allStudents);
 		DefaultComboBoxModel<Unit> desiredComboBox2 = MainMenu.copyComboBoxModel(allStudents);
 		DefaultComboBoxModel<Unit> desiredComboBox3 = MainMenu.copyComboBoxModel(allStudents);
@@ -65,20 +78,21 @@ public class PreferenceSelection extends JDialog
 		desiredComboBox3.removeElement(u);
 		undesiredComboBox1.removeElement(u);
 		
-		JLabel lblDesiredGroupMember = new JLabel("Desired Group Member 1 :");
-		lblDesiredGroupMember.setBounds(57, 48, 145, 22);
+		JLabel lblDesiredGroupMember = new JLabel("Desired Group Member 1:");
+		lblDesiredGroupMember.setBounds(47, 48, 145, 22);
 		getContentPane().add(lblDesiredGroupMember);
 		
-		JLabel lblDesiredGroupMember_1 = new JLabel("Desired Group Member 2 :");
-		lblDesiredGroupMember_1.setBounds(57, 78, 145, 22);
+		JLabel lblDesiredGroupMember_1 = new JLabel("Desired Group Member 2:");
+		lblDesiredGroupMember_1.setBounds(47, 78, 145, 22);
 		getContentPane().add(lblDesiredGroupMember_1);
 		
-		JLabel lblDesiredGroupMember_2 = new JLabel("Desired Group Member 3 :");
-		lblDesiredGroupMember_2.setBounds(57, 108, 145, 22);
+		JLabel lblDesiredGroupMember_2 = new JLabel("Desired Group Member 3:");
+		lblDesiredGroupMember_2.setBounds(47, 108, 145, 22);
 		getContentPane().add(lblDesiredGroupMember_2);
 		
-		JLabel lblUndesiredGroupMember = new JLabel("Undesired Group Member :");
-		lblUndesiredGroupMember.setBounds(57, 164, 145, 22);
+		JLabel lblUndesiredGroupMember = new JLabel("Undesired Group Member:");
+		lblUndesiredGroupMember.setVerticalAlignment(SwingConstants.TOP);
+		lblUndesiredGroupMember.setBounds(47, 164, 182, 22);
 		getContentPane().add(lblUndesiredGroupMember);
 		
 		JButton btnCancel = new JButton("Cancel");
@@ -118,7 +132,7 @@ public class PreferenceSelection extends JDialog
 					if(desired1 == null || desired2 == null || desired3 == null)
 					{
 						int n = showEmptyPrefsDialog();
-						if(n != 1)
+						if(n != 1) // if "yes" to continue is selected
 						{
 							u.setPosConns(desired1, desired2, desired3);
 							u.setNegConn(undesired1);
@@ -130,6 +144,17 @@ public class PreferenceSelection extends JDialog
 							dispose();
 						}
 				    }
+					else
+					{
+						u.setPosConns(desired1, desired2, desired3);
+						u.setNegConn(undesired1);
+						if(uneditedStudents.contains(u) && !editedStudents.contains(u))
+						{
+							uneditedStudents.removeElement(u);
+							editedStudents.addElement(u);
+						}
+						dispose();
+					}
 				}
 			}
 		});
@@ -150,7 +175,7 @@ public class PreferenceSelection extends JDialog
 	    JOptionPane.QUESTION_MESSAGE,
 	    null,     //do not use a custom Icon
 	    options,  //the titles of buttons
-	    options[0]); //default button title
+	    options[1]); //default button title
 		
 		return n;
 	}

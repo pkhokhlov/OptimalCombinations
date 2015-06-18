@@ -1,15 +1,29 @@
-package optimalcombinations;
+/**
+ * Copyright 2015 Pavel Khokhlov <pkhokhlov@hotmail.com>
+ * 				  Jack Prescott <jackbprescott@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.optimalCombinations.algo;
 
 import java.util.ArrayList;
 
 /**
- * @author Pavel Khokhlov
- * @author jackprescott
- */
-/**
- * top 5, 
+ * top 5 for preferences 
  * TODO: add functionality where one student CANNOT be with another, not negconn
  *     - troublemaker factor
+ *         - make sure last remaining people get a group if the remainder has people they can't be with
  *     
  * 
  */
@@ -29,6 +43,7 @@ public class DecreasingUnitPool
 	}
 	
 	/**
+	 * This function finds the strongest group of 3 units and sets the best_ member to that group.
 	 * @precondition: the pool is not empty
 	 * @postcondition: best_ contains the strongest group possible from pool_
 	 */
@@ -57,6 +72,7 @@ public class DecreasingUnitPool
 	}
 	
 	/**
+	 * This function finds the strongest group of 4 units and sets the best_ member to that group.
 	 * @precondition: the pool is not empty
 	 * @postcondition: best_ contains the strongest group possible from pool_
 	 */
@@ -88,6 +104,7 @@ public class DecreasingUnitPool
 	}
 	
 	/**
+	 * This function finds the strongest group of 5 units and sets the best_ member to that group.
 	 * @precondition: the pool is not empty
 	 * @postcondition: best_ contains the strongest group possible from pool_
 	 */
@@ -122,7 +139,7 @@ public class DecreasingUnitPool
 	}
 	
 	/**
-	 * pool_.remove(...) works because the pool_ is partly made of the units within best_
+	 * This function removes the units in best_ from the pool.
 	 * @precondition: best_ contains the most recently calculated strongest group
 	 * @postcondition: all members of best_ are removed from pool_
 	 */
@@ -135,6 +152,8 @@ public class DecreasingUnitPool
 	}
 	
 	/**
+	 * This function takes the remaining units from the pool that were not assigned into groups and assigns
+	 * each one into the group that would increase in happiness the most. 
 	 * @precondition: inadequatePoolSizeException is thrown
 	 * @postcondition: the remaining units are inserted into the group that would be strongest with the remaining units
 	 * @param remaining - the set of units that should be inserted
@@ -168,6 +187,10 @@ public class DecreasingUnitPool
 		pool_ = new ArrayList<Unit>(); // TODO: make sure that the remaining people that are not included in remaining are not deleted
 	}
 	
+	/**
+	 * This function finds the most optimal assortment of groups based on strength.
+	 * @return strongestGroups_ - the optimal set of groups found by decreasing unit pool. 
+	 */
 	public GroupSet findStrongestGroups()
 	{
 		strongestGroups_ = new GroupSet();
@@ -222,6 +245,7 @@ public class DecreasingUnitPool
 				}
 				break;
 		}
+		strongestGroups_.alphabetize();
 		return strongestGroups_;
 	}
 	

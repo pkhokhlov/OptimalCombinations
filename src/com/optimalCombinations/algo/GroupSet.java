@@ -1,10 +1,29 @@
-package optimalcombinations;
+/**
+ * Copyright 2015 Pavel Khokhlov <pkhokhlov@hotmail.com>
+ * 				  Jack Prescott <jackbprescott@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.optimalCombinations.algo;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class GroupSet
 {
-	ArrayList<Group> groupSet_;
+	public ArrayList<Group> groupSet_;
 	int averageStrengthPerGroup_;
 	int minimumStrengthPerGroup_;
 	int minimumStrengthPerUnit_;
@@ -87,6 +106,23 @@ public class GroupSet
 	public String toString()
 	{
 		return groupSet_.toString();
+	}
+	
+	public void alphabetize()
+	{
+		for(Group g : groupSet_)
+		{
+			g.alphabetize();
+		}
+		
+		Collections.sort(groupSet_, new Comparator<Group>() 
+		{
+	        @Override
+	        public int compare(final Group g1, final Group g2) 
+	        {
+	            return g1.getMembers().get(0).getName().compareTo(g2.getMembers().get(0).getName());
+	        }
+		});
 	}
 	
 	public String getGroupScores()
