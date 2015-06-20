@@ -28,6 +28,8 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JTextArea;
 
@@ -37,6 +39,10 @@ public class AddNewStudent extends JDialog
 {
 	private static final long serialVersionUID = -221976191149931321L;
 	String studentName_ = "";
+	JTextArea textArea_;
+	JLabel lblPleaseEnterThe_;
+	JButton btnCancel_;
+	JButton btnOk_;
 
 	public AddNewStudent(final DefaultComboBoxModel<Unit> allStudents, final DefaultListModel<Unit> uneditedStudents)
 	{
@@ -44,20 +50,39 @@ public class AddNewStudent extends JDialog
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(null);
 
-		JLabel lblPleaseEnterThe = new JLabel(
+		lblPleaseEnterThe_ = new JLabel(
 				"Please enter the name of the new student.");
-		lblPleaseEnterThe.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblPleaseEnterThe.setBounds(100, 85, 238, 15);
-		getContentPane().add(lblPleaseEnterThe);
+		lblPleaseEnterThe_.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblPleaseEnterThe_.setBounds(100, 85, 238, 15);
+		getContentPane().add(lblPleaseEnterThe_);
 
-		final JTextArea textArea = new JTextArea();
-		textArea.setBounds(100, 130, 238, 20);
-		getContentPane().add(textArea);
+		textArea_ = new JTextArea();
+		textArea_.setBounds(100, 130, 238, 20);
+		textArea_.addKeyListener(new KeyListener()
+		{
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+				if(e.getKeyCode() == (KeyEvent.VK_ENTER))
+				{
+					readFromField(allStudents, uneditedStudents);
+				}
+			}
 
-		JButton btnCancel = new JButton("Cancel");
-		btnCancel.setBounds(10, 239, 91, 23);
-		getContentPane().add(btnCancel);
-		btnCancel.addActionListener(new ActionListener()
+			@Override
+			public void keyReleased(KeyEvent e){}
+
+			@Override
+			public void keyTyped(KeyEvent e){}
+			
+		});
+		getContentPane().add(textArea_);
+		
+
+		btnCancel_ = new JButton("Cancel");
+		btnCancel_.setBounds(10, 239, 91, 23);
+		getContentPane().add(btnCancel_);
+		btnCancel_.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent arg0)
@@ -67,29 +92,32 @@ public class AddNewStudent extends JDialog
 
 		});
 
-		JButton btnOk = new JButton("OK");
-		btnOk.setBounds(341, 239, 91, 23);
-		getContentPane().add(btnOk);
-		btnOk.addActionListener(new ActionListener()
+		btnOk_ = new JButton("OK");
+		btnOk_.setBounds(341, 239, 91, 23);
+		getContentPane().add(btnOk_);
+		btnOk_.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				JFrame frame = new JFrame();
-				studentName_ = textArea.getText();
-				if (studentName_.length() < 1 || studentName_ == null)
-				{
-					JOptionPane.showMessageDialog(frame,
-							"The name you entered is too short.");
-				} 
-				else
-				{
-					allStudents.addElement(new Unit(studentName_));
-					uneditedStudents.addElement(allStudents.getElementAt(allStudents.getSize() - 1));
-					setVisible(false);
-				}
+				readFromField(allStudents, uneditedStudents);
 			}
 		});
 	}
-
+	
+	public void readFromField(final DefaultComboBoxModel<Unit> allStudents, final DefaultListModel<Unit> uneditedStudents)
+	{
+		studentName_ = textArea_.getText();
+		if (studentName_.length() < 1 || studentName_ == null)
+		{
+			JOptionPane.showMessageDialog(new JFrame(),
+					"The name you entered is too short.");
+		} 
+		else
+		{
+			allStudents.addElement(new Unit(studentName_));
+			uneditedStudents.addElement(allStudents.getElementAt(allStudents.getSize() - 1));
+			setVisible(false);
+		}
+	}
 }

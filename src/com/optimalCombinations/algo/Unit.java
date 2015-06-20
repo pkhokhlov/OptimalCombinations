@@ -17,10 +17,13 @@
 
 package com.optimalCombinations.algo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Unit
+public class Unit implements Serializable
 {
+	private static final long serialVersionUID = 2347103416593796621L;
+	
 	String name_;
 	int posConnSize_;
 	

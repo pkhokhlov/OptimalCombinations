@@ -18,7 +18,6 @@
 package com.optimalCombinations.gui;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -36,6 +35,7 @@ import java.awt.event.MouseListener;
 import javax.swing.JLabel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.optimalCombinations.algo.DataModel;
 import com.optimalCombinations.algo.DecreasingUnitPool;
 import com.optimalCombinations.algo.GroupSet;
 import com.optimalCombinations.algo.Unit;
@@ -47,21 +47,48 @@ import java.util.Arrays;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
-
-public class MainMenu extends JDialog
+/*
+ * TODO: include a save question when closing
+ * 
+ */
+public class MainMenu extends JDialog implements Serializable
 {
 	private static final long serialVersionUID = -7382474446155096090L;
-	final DefaultComboBoxModel<Unit> allStudents_;
-	final DefaultListModel<Unit> uneditedStudents_;
-	final DefaultListModel<Unit> editedStudents_;
+	DataModel model_ = new DataModel();
+	
+	JMenuBar menuBar_;
+	JMenu menuFile_;
+	JMenuItem menuItemSave_;
+	JMenuItem menuItemOpen_;
+	
+	final JList<Unit> uneditedStudentList_;
+	final JList<Unit> editedStudentList_;
 	JList<Unit> lastFocusedStudents_;
 	
+	JLabel lblUneditedStudents_;
+	JLabel lblEditedStudents_;
+	
+	JButton btnEditPrefs_;
+	JButton btnAddStudent_;
+	JButton btnRemoveStudent_;
+	JButton btnNext_;
+	JButton btnExit_;
+	
 	GroupSet finalList_ = new GroupSet();
+	
 
 	/**
 	 * Launch the application.
@@ -74,7 +101,7 @@ public class MainMenu extends JDialog
 			MainMenu dialog = new MainMenu();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
-		} 
+		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
@@ -87,49 +114,45 @@ public class MainMenu extends JDialog
 		setBounds(100, 100, 548, 429);
 		getContentPane().setLayout(null);
 		
-		allStudents_ = new DefaultComboBoxModel<Unit>();
-		uneditedStudents_ = new DefaultListModel<Unit>();
-		editedStudents_ = new DefaultListModel<Unit>();
+		uneditedStudentList_ = new JList<Unit>(model_.uneditedStudents_);
+		uneditedStudentList_.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		
-		final JList<Unit> uneditedStudentList = new JList<Unit>(uneditedStudents_);
-		uneditedStudentList.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lastFocusedStudents_ = uneditedStudentList_;
 		
-		lastFocusedStudents_ = uneditedStudentList;
-		
-		final JList<Unit> editedStudentList = new JList<Unit>(editedStudents_);
-		editedStudentList.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		editedStudentList.addFocusListener(new FocusAdapter() 
+		editedStudentList_ = new JList<Unit>(model_.editedStudents_);
+		editedStudentList_.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		editedStudentList_.addFocusListener(new FocusAdapter() 
 		{
 			@Override
 			public void focusLost(FocusEvent e) 
 			{
-				lastFocusedStudents_ = editedStudentList;
+				lastFocusedStudents_ = editedStudentList_;
 			}
 			
 			@Override
 			public void focusGained(FocusEvent e) 
 			{
-				uneditedStudentList.clearSelection();
+				uneditedStudentList_.clearSelection();
 			}
 		});
-		editedStudentList.setBounds(283, 25, 247, 255);
-		getContentPane().add(editedStudentList);
+		editedStudentList_.setBounds(283, 25, 247, 255);
+		getContentPane().add(editedStudentList_);
 		
-		uneditedStudentList.addFocusListener(new FocusAdapter() 
+		uneditedStudentList_.addFocusListener(new FocusAdapter() 
 		{
 			@Override
 			public void focusLost(FocusEvent arg0) 
 			{
-				lastFocusedStudents_ = uneditedStudentList;
+				lastFocusedStudents_ = uneditedStudentList_;
 			}
 			
 			@Override
 			public void focusGained(FocusEvent e) 
 			{
-				editedStudentList.clearSelection();
+				editedStudentList_.clearSelection();
 			}
 		});
-		uneditedStudentList.setBounds(10, 25, 247, 255);
+		uneditedStudentList_.setBounds(10, 25, 247, 255);
 		
 		MouseListener mouseListener1 = new MouseAdapter()
 		{
@@ -150,21 +173,20 @@ public class MainMenu extends JDialog
 				}
 			}
 		};
-		uneditedStudentList.addMouseListener(mouseListener1);
-
+		uneditedStudentList_.addMouseListener(mouseListener1);
 		
-		getContentPane().add(uneditedStudentList);
+		getContentPane().add(uneditedStudentList_);
 
-		JButton btnAddStudent = new JButton("Add Student");
-		btnAddStudent.addActionListener(new ActionListener()
+		btnAddStudent_ = new JButton("Add Student");
+		btnAddStudent_.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
 				addStudent();
 			}
 		});
-		btnAddStudent.setBounds(10, 291, 111, 23);
-		getContentPane().add(btnAddStudent);
+		btnAddStudent_.setBounds(10, 291, 111, 23);
+		getContentPane().add(btnAddStudent_);
 		
 		MouseListener mouseListener = new MouseAdapter()
 		{
@@ -176,16 +198,16 @@ public class MainMenu extends JDialog
 					int index = theList.locationToIndex(mouseEvent.getPoint());
 					if (index >= 0)
 					{
-						Unit o = (Unit) theList.getModel().getElementAt(index);
-						editPreferences(o);
+						Unit selectedUnit = (Unit) theList.getModel().getElementAt(index);
+						editPreferences(selectedUnit);
 					}
 				}
 			}
 		};
-		editedStudentList.addMouseListener(mouseListener);
+		editedStudentList_.addMouseListener(mouseListener);
 
-		JButton btnEditPrefs = new JButton("Edit Student Preferences");
-		btnEditPrefs.addActionListener(new ActionListener()
+		btnEditPrefs_ = new JButton("Edit Student Preferences");
+		btnEditPrefs_.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
@@ -200,12 +222,12 @@ public class MainMenu extends JDialog
 				}
 			}
 		});
-		btnEditPrefs.setBounds(131, 291, 212, 23);
-		getContentPane().add(btnEditPrefs);
+		btnEditPrefs_.setBounds(131, 291, 212, 23);
+		getContentPane().add(btnEditPrefs_);
 
-		JButton btnExit = new JButton("Exit");
-		btnExit.setBounds(10, 368, 91, 23);
-		btnExit.addActionListener(new ActionListener()
+		btnExit_ = new JButton("Exit");
+		btnExit_.setBounds(10, 347, 91, 23);
+		btnExit_.addActionListener(new ActionListener()
 		{
 			@Override
 			public void actionPerformed(ActionEvent arg0)
@@ -217,12 +239,12 @@ public class MainMenu extends JDialog
 			}
 
 		});
-		getContentPane().add(btnExit);
+		getContentPane().add(btnExit_);
 
-		JButton btnNext = new JButton("Next >>");
-		btnNext.setBounds(419, 368, 111, 23);
-		getContentPane().add(btnNext);
-		btnNext.addActionListener(new ActionListener()
+		btnNext_ = new JButton("Next >>");
+		btnNext_.setBounds(419, 347, 111, 23);
+		getContentPane().add(btnNext_);
+		btnNext_.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
@@ -241,10 +263,11 @@ public class MainMenu extends JDialog
 						if ((s != null) && (s.length() > 0)) 
 						{
 							size = Integer.parseInt(s);
+							boolean status = false;
 							
 							try
 							{
-								generateAndReturnRooms(size);
+								status = generateAndReturnRooms(size);
 							} 
 							catch (FileNotFoundException e)
 							{
@@ -255,15 +278,18 @@ public class MainMenu extends JDialog
 								e.printStackTrace();
 							}
 							
-							setVisible(false);
-							
-							if(continueWithEditing())
+							if(status == true)
 							{
-								setVisible(true);
-							}
-							else
-							{
-								System.exit(0);
+								setVisible(false);
+								
+								if(continueWithEditing())
+								{
+									setVisible(true);
+								}
+								else
+								{
+									System.exit(0);
+								}
 							}
 						}
 						
@@ -271,28 +297,58 @@ public class MainMenu extends JDialog
 			}
 		});
 		
-		JLabel lblUneditedStudents = new JLabel("Students");
-		lblUneditedStudents.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblUneditedStudents.setBounds(107, 7, 50, 15);
-		getContentPane().add(lblUneditedStudents);
+		lblUneditedStudents_ = new JLabel("Students");
+		lblUneditedStudents_.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblUneditedStudents_.setBounds(107, 7, 50, 15);
+		getContentPane().add(lblUneditedStudents_);
 		
-		JLabel lblEditedStudents = new JLabel("Student Preferences");
-		lblEditedStudents.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblEditedStudents.setBounds(348, 7, 155, 15);
-		getContentPane().add(lblEditedStudents);
+		lblEditedStudents_ = new JLabel("Student Preferences");
+		lblEditedStudents_.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblEditedStudents_.setBounds(348, 7, 155, 15);
+		getContentPane().add(lblEditedStudents_);
 		
-		JButton btnRemoveStudent = new JButton("Remove Student");
-		btnRemoveStudent.setBounds(353, 291, 131, 23);
-		getContentPane().add(btnRemoveStudent);
-		btnRemoveStudent.addActionListener(new ActionListener()
+		btnRemoveStudent_ = new JButton("Remove Student");
+		btnRemoveStudent_.setBounds(353, 291, 131, 23);
+		getContentPane().add(btnRemoveStudent_);
+		
+		menuBar_ = new JMenuBar();
+		setJMenuBar(menuBar_);
+		
+		menuFile_ = new JMenu("File");
+		menuBar_.add(menuFile_);
+		
+		menuItemSave_ = new JMenuItem("Save");
+		menuItemSave_.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				saveDataModel();
+			}
+		});
+		menuFile_.add(menuItemSave_);
+		
+		menuItemOpen_ = new JMenuItem("Open");
+		menuItemOpen_.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				DataModel model = extractDataModel(getFile());
+				setDataModel(model);
+			}
+		});
+		menuFile_.add(menuItemOpen_);
+		
+		btnRemoveStudent_.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
 				if(lastFocusedStudents_.getSelectedValue() != null)
 				{
-					allStudents_.removeElement(lastFocusedStudents_.getSelectedValue());
-					editedStudents_.removeElement(lastFocusedStudents_.getSelectedValue());
-					uneditedStudents_.removeElement(lastFocusedStudents_.getSelectedValue());
+					model_.allStudents_.removeElement(lastFocusedStudents_.getSelectedValue());
+					model_.editedStudents_.removeElement(lastFocusedStudents_.getSelectedValue());
+					model_.uneditedStudents_.removeElement(lastFocusedStudents_.getSelectedValue());
 				}
 				else
 				{
@@ -301,18 +357,110 @@ public class MainMenu extends JDialog
 				}
 			}
 		});
+	}
+	
+	/**
+	 * This function sets the model_ and all the JLists to display a saved version of the program.
+	 * @param model - the model_ that contains all the data that should be displayed
+	 */
+	public void setDataModel(DataModel model)
+	{
+		model_ = model;
+		editedStudentList_.setModel(model_.editedStudents_);
+		uneditedStudentList_.setModel(model_.uneditedStudents_);
+	}
+	
+	/**
+	 * TODO: check if the object being read is null in subsequent methods.
+	 * @return model - the DataModel from the file being read
+	 */
+	public DataModel extractDataModel(File file)
+	{
+		DataModel model = null;
+		
+		if(file == null)
+			return model_;
+		
+		try
+        {
+            FileInputStream fis = new FileInputStream(file);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            model = (DataModel) ois.readObject();
+            ois.close();
 
+            // Clean up the file
+            new File(file.getName()).delete();
+            
+            return model;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+		return model;
+	}
+	
+	public File getFile()
+	{
+		File file = null;
+		JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter textFileOnlyFilter = new FileNameExtensionFilter(".proj", "proj", "project");
+        fileChooser.setFileFilter(textFileOnlyFilter);
+        int returnVal = fileChooser.showOpenDialog(new JFrame());
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            file = fileChooser.getSelectedFile();
+        }
+        
+        return file;
 	}
 
 	/**
-	 * This function opens a dialog for the user to edit the roommate preferences of a student.
-	 * @param u - the unit whose preferences will be changed
+	 * This function saves the current DataModel into a file.
 	 */
-	public void editPreferences(Unit u)
+	public void saveDataModel()
+	{
+		File file = null;
+		JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter textFileOnlyFilter = new FileNameExtensionFilter(".proj", "proj", "project");
+        fileChooser.setFileFilter(textFileOnlyFilter);
+        int returnVal = fileChooser.showSaveDialog(new JFrame());
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            file = fileChooser.getSelectedFile();
+			if (!file.getName().endsWith(".proj")) 
+			{
+				file = new File(file.toString() + ".proj");
+			}
+        }
+        
+        if(file == null)
+        {
+        	System.out.println("Error: File could not be made");
+        	return;
+        }
+		try
+        {
+            FileOutputStream fos = new FileOutputStream(file);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(model_);
+            oos.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+	}
+	
+	/**
+	 * This function opens a dialog for the user to edit the roommate preferences of a student.
+	 * @param selectedUnit - the unit whose preferences will be changed
+	 */
+	public void editPreferences(Unit selectedUnit)
 	{
 		try
 		{
-			PreferenceSelection prefSelectDialog = new PreferenceSelection(u, uneditedStudents_, editedStudents_, allStudents_);
+			PreferenceSelection prefSelectDialog = new PreferenceSelection(selectedUnit, model_.uneditedStudents_, model_.editedStudents_, model_.allStudents_);
 			prefSelectDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			prefSelectDialog.setVisible(true);
 		} 
@@ -327,7 +475,7 @@ public class MainMenu extends JDialog
 	 */
 	public void addStudent()
 	{
-		AddNewStudent addStudentDialog = new AddNewStudent(allStudents_, uneditedStudents_);
+		AddNewStudent addStudentDialog = new AddNewStudent(model_.allStudents_, model_.uneditedStudents_);
 		addStudentDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		addStudentDialog.setVisible(true);
 	}
@@ -345,11 +493,7 @@ public class MainMenu extends JDialog
 	    options,  //the titles of buttons
 	    options[0]); //default button title
 		
-		if(n != 1) // if "yes" to continue is selected
-		{
-			return true;
-		}
-		return false;
+		return n != 1; // if "yes" to continue is selected
 	}
 	
 	/**
@@ -374,18 +518,30 @@ public class MainMenu extends JDialog
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException
 	 */
-	public void generateAndReturnRooms(int size) throws FileNotFoundException, UnsupportedEncodingException
+	public boolean generateAndReturnRooms(int size) throws FileNotFoundException, UnsupportedEncodingException
 	{
-		Unit[] temp = new Unit[editedStudents_.getSize()];
-		editedStudents_.copyInto(temp);
-		ArrayList<Unit> edited = new ArrayList<Unit>(Arrays.asList(temp));
-		
-		DecreasingUnitPool result = new DecreasingUnitPool(edited, size);
-		finalList_ = result.findStrongestGroups();
-		fileChooserIntoTextFile();
+		if(size > model_.editedStudents_.getSize())
+		{
+			JOptionPane.showMessageDialog(new JFrame(),
+					"Error: The class size is larger than the number of students.");
+			return false;
+		}
+		else
+		{
+			Unit[] temp = new Unit[model_.editedStudents_.getSize()];
+			model_.editedStudents_.copyInto(temp);
+			ArrayList<Unit> edited = new ArrayList<Unit>(Arrays.asList(temp));
+			
+			DecreasingUnitPool result = new DecreasingUnitPool(edited, size);
+			finalList_ = result.findStrongestGroups();
+			fileChooserIntoTextFile();
+			return true;
+		}
 	}
 
-	
+	/**
+	 * This function brings up a file chooser and the user saves the results from the generation into the text file.
+	 */
 	public void fileChooserIntoTextFile()
 	{
         JFileChooser fileChooser = new JFileChooser();
@@ -449,10 +605,6 @@ public class MainMenu extends JDialog
 	    options,  //the titles of buttons
 	    options[1]); //default button title
 		
-		if(n != 1) // if "yes" to continue is selected
-		{
-			return true;
-		}
-		return false;
+		return n != 1; // "yes" was selected
 	}
 }
