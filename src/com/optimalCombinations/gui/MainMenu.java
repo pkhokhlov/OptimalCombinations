@@ -56,18 +56,19 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 /*
  * TODO: include a save question when closing
- * 
  */
 public class MainMenu extends JDialog implements Serializable
 {
 	private static final long serialVersionUID = -7382474446155096090L;
 	DataModel model_ = new DataModel();
+	File savedFile_ = null;
 	
 	JMenuBar menuBar_;
 	JMenu menuFile_;
@@ -88,6 +89,7 @@ public class MainMenu extends JDialog implements Serializable
 	JButton btnExit_;
 	
 	GroupSet finalList_ = new GroupSet();
+	private JMenuItem menuItemSaveAs_;
 	
 
 	/**
@@ -161,6 +163,7 @@ public class MainMenu extends JDialog implements Serializable
 			 */
 			public void mouseClicked(MouseEvent mouseEvent)
 			{
+				@SuppressWarnings("unchecked")
 				JList<Unit> theList = (JList<Unit>) mouseEvent.getSource();
 				if (mouseEvent.getClickCount() == 2)
 				{
@@ -192,7 +195,8 @@ public class MainMenu extends JDialog implements Serializable
 		{
 			public void mouseClicked(MouseEvent mouseEvent)
 			{
-				JList theList = (JList) mouseEvent.getSource();
+				@SuppressWarnings("unchecked")
+				JList<Unit> theList = (JList<Unit>) mouseEvent.getSource();
 				if (mouseEvent.getClickCount() == 2)
 				{
 					int index = theList.locationToIndex(mouseEvent.getPoint());
@@ -232,10 +236,20 @@ public class MainMenu extends JDialog implements Serializable
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
-				if(shouldClose())
+				if(shouldSaveOnExit())
 				{
-					System.exit(0);
+					if(model_.saved_) 
+					{
+						saveToFile(savedFile_);
+					}
+					else
+					{
+						saveAsDataModel();
+					}
+					if(savedFile_ == null)
+						return;
 				}
+				System.exit(0);
 			}
 
 		});
@@ -277,20 +291,6 @@ public class MainMenu extends JDialog implements Serializable
 							{
 								e.printStackTrace();
 							}
-							
-							if(status == true)
-							{
-								setVisible(false);
-								
-								if(continueWithEditing())
-								{
-									setVisible(true);
-								}
-								else
-								{
-									System.exit(0);
-								}
-							}
 						}
 						
 				
@@ -323,12 +323,18 @@ public class MainMenu extends JDialog implements Serializable
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
-				saveDataModel();
+				if(model_.saved_) 
+				{
+					saveToFile(savedFile_);
+				}
+				else
+				{
+					saveAsDataModel();
+				}
 			}
 		});
-		menuFile_.add(menuItemSave_);
 		
-		menuItemOpen_ = new JMenuItem("Open");
+		menuItemOpen_ = new JMenuItem("Open...");
 		menuItemOpen_.addActionListener(new ActionListener()
 		{
 			@Override
@@ -339,6 +345,18 @@ public class MainMenu extends JDialog implements Serializable
 			}
 		});
 		menuFile_.add(menuItemOpen_);
+		menuFile_.add(menuItemSave_);
+		
+		menuItemSaveAs_ = new JMenuItem("Save As...");
+		menuItemSaveAs_.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				saveAsDataModel();
+			}
+		});
+		menuFile_.add(menuItemSaveAs_);
 		
 		btnRemoveStudent_.addActionListener(new ActionListener()
 		{
@@ -371,13 +389,11 @@ public class MainMenu extends JDialog implements Serializable
 	}
 	
 	/**
-	 * TODO: check if the object being read is null in subsequent methods.
 	 * @return model - the DataModel from the file being read
 	 */
 	public DataModel extractDataModel(File file)
 	{
 		DataModel model = null;
-		
 		if(file == null)
 			return model_;
 		
@@ -410,6 +426,7 @@ public class MainMenu extends JDialog implements Serializable
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
             file = fileChooser.getSelectedFile();
+            savedFile_ = file;
         }
         
         return file;
@@ -418,7 +435,7 @@ public class MainMenu extends JDialog implements Serializable
 	/**
 	 * This function saves the current DataModel into a file.
 	 */
-	public void saveDataModel()
+	public void saveAsDataModel()
 	{
 		File file = null;
 		JFileChooser fileChooser = new JFileChooser();
@@ -439,10 +456,28 @@ public class MainMenu extends JDialog implements Serializable
         	System.out.println("Error: File could not be made");
         	return;
         }
+        //
 		try
         {
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
+            model_.saved_ = true;
+            oos.writeObject(model_);
+            oos.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+	}
+	
+	public void saveToFile(File file)
+	{
+		try
+        {
+            FileOutputStream fos = new FileOutputStream(file);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            model_.saved_ = true;
             oos.writeObject(model_);
             oos.close();
         }
@@ -565,9 +600,23 @@ public class MainMenu extends JDialog implements Serializable
         			writer.println("Group " + (i+1) + ": " + finalList_.groupSet_.get(i).toString());
         		}
         		writer.close();
-        		openGeneratedFile(file);
+        		
+        		Object[] options = {"Yes", "No"};
+        		int n = JOptionPane.showOptionDialog(new JFrame(),
+        	    "Would you like to open the result?",
+        	    "DC Room Generator",
+        	    JOptionPane.YES_NO_OPTION,
+        	    JOptionPane.QUESTION_MESSAGE,
+        	    null,     //do not use a custom Icon
+        	    options,  //the titles of buttons
+        	    options[0]); //default button title
+        		
+        		if(n != 1) // if "yes" to continue is selected
+        		{
+        			openGeneratedFile(file);
+        		}
             }
-            catch (IOException e) 
+            catch (IOException e)
             {
                 e.printStackTrace();
             }
@@ -589,22 +638,24 @@ public class MainMenu extends JDialog implements Serializable
 		} 
 		else 
 		{
-			JOptionPane.showMessageDialog(new JFrame(), "Done.");
+			JOptionPane.showMessageDialog(new JFrame(), "Could not find a text editor.");
 		}
 	}
 	
-	public boolean shouldClose()
+	public boolean shouldSaveOnExit()
 	{
 		Object[] options = {"Yes", "No"};
 		int n = JOptionPane.showOptionDialog(new JFrame(),
-	    "Do you want to exit the program?",
+	    "Would you like to save before exiting?",
 	    "DC Room Generator",
 	    JOptionPane.YES_NO_OPTION,
 	    JOptionPane.QUESTION_MESSAGE,
 	    null,     //do not use a custom Icon
 	    options,  //the titles of buttons
-	    options[1]); //default button title
+	    options[0]); //default button title
 		
-		return n != 1; // "yes" was selected
+		System.out.println(n);
+		
+		return n == 0; // "yes" was selected
 	}
 }

@@ -53,7 +53,7 @@ public class AddNewStudent extends JDialog
 		lblPleaseEnterThe_ = new JLabel(
 				"Please enter the name of the new student.");
 		lblPleaseEnterThe_.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblPleaseEnterThe_.setBounds(100, 85, 238, 15);
+		lblPleaseEnterThe_.setBounds(100, 85, 291, 15);
 		getContentPane().add(lblPleaseEnterThe_);
 
 		textArea_ = new JTextArea();

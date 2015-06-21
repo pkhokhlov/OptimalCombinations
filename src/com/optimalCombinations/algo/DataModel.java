@@ -12,4 +12,5 @@ public class DataModel implements Serializable
 	public DefaultComboBoxModel<Unit> allStudents_ = new DefaultComboBoxModel<Unit>();
 	public DefaultListModel<Unit> uneditedStudents_ = new DefaultListModel<Unit>();
 	public DefaultListModel<Unit> editedStudents_ = new DefaultListModel<Unit>();
+	public Boolean saved_ = false;
 }
