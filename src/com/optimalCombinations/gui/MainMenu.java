@@ -277,11 +277,10 @@ public class MainMenu extends JDialog implements Serializable
 						if ((s != null) && (s.length() > 0)) 
 						{
 							size = Integer.parseInt(s);
-							boolean status = false;
 							
 							try
 							{
-								status = generateAndReturnRooms(size);
+								generateAndReturnRooms(size);
 							} 
 							catch (FileNotFoundException e)
 							{
@@ -470,7 +469,11 @@ public class MainMenu extends JDialog implements Serializable
             e.printStackTrace();
         }
 	}
-	
+	 
+	/**
+	 * This function saves the current model_ to an existing file.
+	 * @param file
+	 */
 	public void saveToFile(File file)
 	{
 		try
@@ -506,7 +509,8 @@ public class MainMenu extends JDialog implements Serializable
 	}
 	
 	/**
-	 * This function opens the AddNewStudent dialog and adds a unit with the name inputed by the user through the dialog.
+	 * This function opens the AddNewStudent dialog and adds a unit with the name inputed by the user through the dialog
+	 * to uneditedStudents_.
 	 */
 	public void addStudent()
 	{
@@ -515,6 +519,10 @@ public class MainMenu extends JDialog implements Serializable
 		addStudentDialog.setVisible(true);
 	}
 	
+	/**
+	 * This function opens an option dialog and asks if the user would like to continue editing the class.
+	 * @return returns true if yes is selected
+	 */
 	public boolean continueWithEditing()
 	{
 		Object[] options = {"Yes", "No"};
@@ -528,7 +536,7 @@ public class MainMenu extends JDialog implements Serializable
 	    options,  //the titles of buttons
 	    options[0]); //default button title
 		
-		return n != 1; // if "yes" to continue is selected
+		return n == 0 ; // if "yes" to continue is selected
 	}
 	
 	/**
@@ -548,8 +556,10 @@ public class MainMenu extends JDialog implements Serializable
 	}
 	
 	/**
-	 * This function generates rooms using the DecreasingUnitPool algorithm and writes the result to a text file.
+	 * This function generates rooms from the editedStudents_ using the DecreasingUnitPool algorithm 
+	 * and writes the result to a text file.
 	 * @param size - the size of the rooms
+	 * @return boolean - true if the file with the rooms has been created, false otherwise
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException
 	 */
@@ -575,7 +585,7 @@ public class MainMenu extends JDialog implements Serializable
 	}
 
 	/**
-	 * This function brings up a file chooser and the user saves the results from the generation into the text file.
+	 * This function brings up a file chooser and the user saves the finalList_ into the text file.
 	 */
 	public void fileChooserIntoTextFile()
 	{
@@ -623,6 +633,10 @@ public class MainMenu extends JDialog implements Serializable
         }
 	}
 	
+	/**
+	 * This function opens a file with the default text editor on the system.
+	 * @param file - the file desired to be opened
+	 */
 	public void openGeneratedFile(File file)
 	{
 		if (Desktop.isDesktopSupported()) 
