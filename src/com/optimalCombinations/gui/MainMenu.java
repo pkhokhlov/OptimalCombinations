@@ -158,9 +158,8 @@ public class MainMenu extends JDialog implements Serializable
 		
 		MouseListener mouseListener1 = new MouseAdapter()
 		{
-			/*
-			 * This function opens the preference editing of an element that is double clicked.
-			 */
+			
+			/* This function opens the preference editing of an element that is double clicked. */
 			public void mouseClicked(MouseEvent mouseEvent)
 			{
 				@SuppressWarnings("unchecked")
@@ -236,7 +235,9 @@ public class MainMenu extends JDialog implements Serializable
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
-				if(shouldSaveOnExit())
+				int n = shouldSaveOnExit();
+				
+				if(n == 0) // yes
 				{
 					if(model_.saved_) 
 					{
@@ -248,8 +249,13 @@ public class MainMenu extends JDialog implements Serializable
 					}
 					if(savedFile_ == null)
 						return;
+					
+					System.exit(0);
 				}
-				System.exit(0);
+				else if(n == 1)
+				{
+					System.exit(0);
+				}
 			}
 
 		});
@@ -452,7 +458,6 @@ public class MainMenu extends JDialog implements Serializable
         
         if(file == null)
         {
-        	System.out.println("Error: File could not be made");
         	return;
         }
         //
@@ -559,17 +564,15 @@ public class MainMenu extends JDialog implements Serializable
 	 * This function generates rooms from the editedStudents_ using the DecreasingUnitPool algorithm 
 	 * and writes the result to a text file.
 	 * @param size - the size of the rooms
-	 * @return boolean - true if the file with the rooms has been created, false otherwise
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException
 	 */
-	public boolean generateAndReturnRooms(int size) throws FileNotFoundException, UnsupportedEncodingException
+	public void generateAndReturnRooms(int size) throws FileNotFoundException, UnsupportedEncodingException
 	{
 		if(size > model_.editedStudents_.getSize())
 		{
 			JOptionPane.showMessageDialog(new JFrame(),
 					"Error: The class size is larger than the number of students.");
-			return false;
 		}
 		else
 		{
@@ -580,7 +583,6 @@ public class MainMenu extends JDialog implements Serializable
 			DecreasingUnitPool result = new DecreasingUnitPool(edited, size);
 			finalList_ = result.findStrongestGroups();
 			fileChooserIntoTextFile();
-			return true;
 		}
 	}
 
@@ -613,7 +615,7 @@ public class MainMenu extends JDialog implements Serializable
         		
         		Object[] options = {"Yes", "No"};
         		int n = JOptionPane.showOptionDialog(new JFrame(),
-        	    "Would you like to open the result?",
+        	    "Would you like to open the generated rooms?",
         	    "DC Room Generator",
         	    JOptionPane.YES_NO_OPTION,
         	    JOptionPane.QUESTION_MESSAGE,
@@ -621,7 +623,7 @@ public class MainMenu extends JDialog implements Serializable
         	    options,  //the titles of buttons
         	    options[0]); //default button title
         		
-        		if(n != 1) // if "yes" to continue is selected
+        		if(n == 0) // if "yes" to continue is selected
         		{
         			openGeneratedFile(file);
         		}
@@ -656,7 +658,11 @@ public class MainMenu extends JDialog implements Serializable
 		}
 	}
 	
-	public boolean shouldSaveOnExit()
+	/**
+	 * This displays an option dialog that asks the user if he/she wishes to save before exiting.
+	 * @return n - the result from the optionDialog
+	 */
+	public int shouldSaveOnExit()
 	{
 		Object[] options = {"Yes", "No"};
 		int n = JOptionPane.showOptionDialog(new JFrame(),
@@ -670,6 +676,6 @@ public class MainMenu extends JDialog implements Serializable
 		
 		System.out.println(n);
 		
-		return n == 0; // "yes" was selected
+		return n; // "yes" was selected
 	}
 }
