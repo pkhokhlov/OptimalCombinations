@@ -26,6 +26,7 @@ public class Group
 	ArrayList<Unit> members_ = new ArrayList<Unit>();
 	int groupSize_;
 	int minimumUnitStrength_;
+	boolean flag_=false;
 	
 	Group()
 	{
@@ -112,6 +113,40 @@ public class Group
 		}
 		
 		return groupScore;
+	}
+	
+	public int getMinUnitScore()
+	{
+			int minUnitScore = Integer.MAX_VALUE;
+			for (int i = 0; i < members_.size(); i++)
+			{
+				members_.get(i).getPosConns().remove(null);
+				ArrayList<Unit> memPosConnsi = members_.get(i).getPosConns();
+				int tempUnitScore = 0;
+				middleLoop:
+				for (int x = 0; x < memPosConnsi.size(); x++)
+				{
+					Unit posConnx = memPosConnsi.get(x);
+					for (int j = 0; j < members_.size(); j++)
+					{
+						if(posConnx == members_.get(j))
+						{
+							if(x == 0)
+								tempUnitScore += 3;
+							else if(x == 1)
+								tempUnitScore += 2;
+							else 
+								tempUnitScore++;
+							
+							continue middleLoop; // does not go further in comparing once match is found
+						}
+					}
+				}
+				if(tempUnitScore < minUnitScore)
+					minUnitScore = tempUnitScore;
+			}
+			
+			return minUnitScore;
 	}
 	/**
 	 * TODO: fix

@@ -60,6 +60,8 @@ public class DecreasingUnitPool
 				for(int c = b + 1; c < pool_.size(); c++)
 				{
 					Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c)});
+					if(temp.getMinUnitScore() < 1)
+						continue;
 					int gScore = temp.getGroupScore();
 					if(gScore > highestScore)
 					{
@@ -91,6 +93,8 @@ public class DecreasingUnitPool
 					for(int d = c + 1; d < pool_.size(); d++)
 					{
 						Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d)});
+						if(temp.getMinUnitScore() < 1)
+							continue;
 						int gScore = temp.getGroupScore();
 						if(gScore > highestScore)
 						{
@@ -125,6 +129,8 @@ public class DecreasingUnitPool
 						for(int e = d + 1; e < pool_.size(); e++)
 						{
 							Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e)});
+							if(temp.getMinUnitScore() < 1)
+								continue;
 							int gScore = temp.getGroupScore();
 							if(gScore > highestScore)
 							{

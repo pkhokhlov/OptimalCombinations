@@ -63,6 +63,14 @@ import javax.swing.JMenuItem;
 
 /*
  * TODO: include a save question when closing
+ * TODO: scrollbar for JList
+ * TODO: button add new student to the addstudent dialog
+ * TODO: add + button to increase number of preferences
+ * TODO: change student name option
+ * TODO: search within list
+ * TODO: In selecting preferences, remove a student from the other preferences if it is selected in one
+ * TODO: have settings tab for algo parameters
+ * TODO: when generating rooms, generate automatic text file and ask to save later
  */
 public class MainMenu extends JDialog implements Serializable
 {
