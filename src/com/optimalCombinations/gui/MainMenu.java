@@ -235,29 +235,26 @@ public class MainMenu extends JDialog implements Serializable
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
-				int n = shouldSaveOnExit();
-				
-				if(n == 0) // yes
+				if(model_.allStudents_.getSize() == 0)
 				{
-					if(model_.saved_) 
-					{
-						saveToFile(savedFile_);
-					}
-					else
-					{
-						saveAsDataModel();
-					}
-					if(savedFile_ == null)
-						return;
-					
 					System.exit(0);
 				}
-				else if(n == 1)
+				else
 				{
+					if(shouldSaveOnExit() == 0)
+					{
+						if(model_.saved_) 
+						{
+							saveToFile(savedFile_);
+						}
+						else
+						{
+							saveAsDataModel();
+						}
+					}
 					System.exit(0);
 				}
 			}
-
 		});
 		getContentPane().add(btnExit_);
 
@@ -676,6 +673,6 @@ public class MainMenu extends JDialog implements Serializable
 		
 		System.out.println(n);
 		
-		return n; // "yes" was selected
+		return n;
 	}
 }
