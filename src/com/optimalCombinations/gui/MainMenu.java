@@ -60,17 +60,18 @@ import java.io.UnsupportedEncodingException;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
 
 /*
- * TODO: include a save question when closing
- * TODO: scrollbar for JList
  * TODO: button add new student to the addstudent dialog
  * TODO: add + button to increase number of preferences
  * TODO: change student name option
  * TODO: search within list
  * TODO: In selecting preferences, remove a student from the other preferences if it is selected in one
+ * 			- eliminates duplicate choices dialog
  * TODO: have settings tab for algo parameters
  * TODO: when generating rooms, generate automatic text file and ask to save later
+ * TODO: evaluate a group separately
  */
 public class MainMenu extends JDialog implements Serializable
 {
@@ -98,6 +99,8 @@ public class MainMenu extends JDialog implements Serializable
 	
 	GroupSet finalList_ = new GroupSet();
 	private JMenuItem menuItemSaveAs_;
+	private JScrollPane editedStudentScrollPane_;
+	private JScrollPane uneditedStudentScrollPane_;
 	
 
 	/**
@@ -145,8 +148,8 @@ public class MainMenu extends JDialog implements Serializable
 				uneditedStudentList_.clearSelection();
 			}
 		});
-		editedStudentList_.setBounds(283, 25, 247, 255);
-		getContentPane().add(editedStudentList_);
+		editedStudentList_.setBounds(283, 251, 247, 29);
+		//getContentPane().add(editedStudentList_);
 		
 		uneditedStudentList_.addFocusListener(new FocusAdapter() 
 		{
@@ -162,7 +165,7 @@ public class MainMenu extends JDialog implements Serializable
 				editedStudentList_.clearSelection();
 			}
 		});
-		uneditedStudentList_.setBounds(10, 25, 247, 255);
+		uneditedStudentList_.setBounds(10, 251, 247, 29);
 		
 		MouseListener mouseListener1 = new MouseAdapter()
 		{
@@ -185,7 +188,7 @@ public class MainMenu extends JDialog implements Serializable
 		};
 		uneditedStudentList_.addMouseListener(mouseListener1);
 		
-		getContentPane().add(uneditedStudentList_);
+		//getContentPane().add(uneditedStudentList_);
 
 		btnAddStudent_ = new JButton("Add Student");
 		btnAddStudent_.addActionListener(new ActionListener()
@@ -320,6 +323,16 @@ public class MainMenu extends JDialog implements Serializable
 		btnRemoveStudent_ = new JButton("Remove Student");
 		btnRemoveStudent_.setBounds(353, 291, 131, 23);
 		getContentPane().add(btnRemoveStudent_);
+		
+		editedStudentScrollPane_ = new JScrollPane();
+		editedStudentScrollPane_.setViewportView(editedStudentList_);
+		editedStudentScrollPane_.setBounds(283, 32, 247, 237);
+		getContentPane().add(editedStudentScrollPane_);
+		
+		uneditedStudentScrollPane_ = new JScrollPane();
+		uneditedStudentScrollPane_.setViewportView(uneditedStudentList_);
+		uneditedStudentScrollPane_.setBounds(10, 32, 247, 237);
+		getContentPane().add(uneditedStudentScrollPane_);
 		
 		menuBar_ = new JMenuBar();
 		setJMenuBar(menuBar_);
