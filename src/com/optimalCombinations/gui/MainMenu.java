@@ -46,10 +46,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -72,17 +74,20 @@ import javax.swing.JScrollPane;
  * TODO: have settings tab for algo parameters
  * TODO: when generating rooms, generate automatic text file and ask to save later
  * TODO: evaluate a group separately
+ * TODO: when hitting cancel on save, don't make it so that it loses progress
  */
 public class MainMenu extends JDialog implements Serializable
 {
 	private static final long serialVersionUID = -7382474446155096090L;
 	DataModel model_ = new DataModel();
 	File savedFile_ = null;
+	File savedStudentListFile_ = null;
 	
 	JMenuBar menuBar_;
 	JMenu menuFile_;
 	JMenuItem menuItemSave_;
 	JMenuItem menuItemOpen_;
+	JMenuItem menuItemImportClassList_;
 	
 	final JList<Unit> uneditedStudentList_;
 	final JList<Unit> editedStudentList_;
@@ -120,7 +125,10 @@ public class MainMenu extends JDialog implements Serializable
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Constructor for the gui.
+	 */
 	public MainMenu()
 	{
 		setTitle("DC Trip Room Generator");
@@ -149,7 +157,6 @@ public class MainMenu extends JDialog implements Serializable
 			}
 		});
 		editedStudentList_.setBounds(283, 251, 247, 29);
-		//getContentPane().add(editedStudentList_);
 		
 		uneditedStudentList_.addFocusListener(new FocusAdapter() 
 		{
@@ -187,8 +194,6 @@ public class MainMenu extends JDialog implements Serializable
 			}
 		};
 		uneditedStudentList_.addMouseListener(mouseListener1);
-		
-		//getContentPane().add(uneditedStudentList_);
 
 		btnAddStudent_ = new JButton("Add Student");
 		btnAddStudent_.addActionListener(new ActionListener()
@@ -363,13 +368,35 @@ public class MainMenu extends JDialog implements Serializable
 			@Override
 			public void actionPerformed(ActionEvent arg0)
 			{
-				DataModel model = extractDataModel(getFile());
+				DataModel model = extractDataModel(importDataModelFile());
 				setDataModel(model);
 			}
 		});
+		
+		menuItemImportClassList_ = new JMenuItem("Import Class List...");
+		menuItemImportClassList_.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				importStudentListFile();
+				try
+				{
+					importCSVStudentList(savedStudentListFile_);
+					csvToDataModel(savedStudentListFile_);
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+			}
+		});
+		
 		menuFile_.add(menuItemOpen_);
 		menuFile_.add(menuItemSave_);
-		
+		menuFile_.add(menuItemImportClassList_);
+
 		menuItemSaveAs_ = new JMenuItem("Save As...");
 		menuItemSaveAs_.addActionListener(new ActionListener()
 		{
@@ -380,6 +407,7 @@ public class MainMenu extends JDialog implements Serializable
 			}
 		});
 		menuFile_.add(menuItemSaveAs_);
+		
 		
 		btnRemoveStudent_.addActionListener(new ActionListener()
 		{
@@ -439,7 +467,7 @@ public class MainMenu extends JDialog implements Serializable
 		return model;
 	}
 	
-	public File getFile()
+	public File importDataModelFile()
 	{
 		File file = null;
 		JFileChooser fileChooser = new JFileChooser();
@@ -453,6 +481,102 @@ public class MainMenu extends JDialog implements Serializable
         }
         
         return file;
+	}
+	
+	/**
+	 * Imports the csv of the student list and saves it
+	 * Specs for CSV: 
+	 * column 0  - timestamp
+	 * column 1  - name of student
+	 * column 2+ - prefs in order
+	 */
+	public File importStudentListFile()
+	{
+		File file = null;
+		JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter textFileOnlyFilter = new FileNameExtensionFilter(".csv", "csv", "csv");
+        fileChooser.setFileFilter(textFileOnlyFilter);
+        int returnVal = fileChooser.showOpenDialog(new JFrame());
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            file = fileChooser.getSelectedFile();
+            savedStudentListFile_ = file;
+        }
+        
+        return file;
+	}
+	
+	/**
+	 * @precondition - importCSVStudentList is performed and there is a populated unedited student list
+	 * This function takes the input from a csv and loads it into the datamodel
+	 * @param csvFile
+	 * @throws IOException 
+	 */
+	public void csvToDataModel(File csvFile) throws IOException
+	{
+		if(csvFile == null)
+			return;
+		
+		String csvSplitBy = ",";
+		String line;
+		
+		BufferedReader br = new BufferedReader(new FileReader(csvFile));
+		line = br.readLine(); // skips first line that contains names of columns
+		while ((line = br.readLine()) != null) 
+		{
+			Unit tempUnit = model_.uneditedStudents_.getElementAt(0);
+			// creates an array of strings that contain entries in each column
+		    String[] columns = line.split(csvSplitBy);
+		    
+		    // adds the student's preferences to the unit in the uneditedStudents
+		    ArrayList<Unit> studentPosCons = tempUnit.getPosConns();
+		    
+		    // goes through saved string array with names of posconns & adds them to posconn of student
+		    outerloop:
+		    for(int i = 2; i < columns.length; i++)
+		    {
+		    	String tempPosConn = columns[i];
+		    	//System.out.print(" " + tempPosConn + " ");
+		    	for(int j = 0; j < model_.allStudents_.getSize(); j++)
+		    	{
+		    		if(model_.allStudents_.getElementAt(j).getName().equals(tempPosConn))
+		    		{
+		    			studentPosCons.add(model_.allStudents_.getElementAt(j));
+		    			continue outerloop;
+		    		}
+		    	}
+		    }
+		    model_.uneditedStudents_.removeElement(tempUnit);
+		    model_.editedStudents_.addElement(tempUnit);
+		}
+		br.close();
+	}
+	
+	/**
+	 * This function adds the students from the csv to the allstudent and uneditedlist
+	 * @param csvFile
+	 * @throws IOException
+	 */
+	public void importCSVStudentList(File csvFile) throws IOException
+	{
+		if(csvFile == null)
+			return;
+		
+		String csvSplitBy = ",";
+		String line;
+		BufferedReader br = new BufferedReader(new FileReader(csvFile));
+		line = br.readLine(); // skips first line that contains names of columns
+		System.out.println("Student List:");
+		while((line = br.readLine()) != null) 
+		{
+		    String[] columns = line.split(csvSplitBy); // creates an array of strings that contain entries in each column
+		    Unit tempUnit = new Unit(columns[1]);
+		    
+		    model_.allStudents_.addElement(tempUnit);
+		    model_.uneditedStudents_.addElement(tempUnit);
+		    System.out.println(tempUnit);
+		}
+		br.close();
 	}
 
 	/**
@@ -478,7 +602,7 @@ public class MainMenu extends JDialog implements Serializable
         {
         	return;
         }
-        //
+        
 		try
         {
             FileOutputStream fos = new FileOutputStream(file);
