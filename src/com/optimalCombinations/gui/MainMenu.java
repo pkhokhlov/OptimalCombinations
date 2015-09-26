@@ -507,6 +507,34 @@ public class MainMenu extends JDialog implements Serializable
 	}
 	
 	/**
+	 * This function adds the students from the csv to the allstudent and uneditedlist
+	 * @param csvFile
+	 * @throws IOException
+	 */
+	public void importCSVStudentList(File csvFile) throws IOException
+	{
+		if(csvFile == null)
+			return;
+		
+		int numberImported = 0;
+		String csvSplitBy = ",";
+		String line;
+		BufferedReader br = new BufferedReader(new FileReader(csvFile));
+		line = br.readLine(); // skips first line that contains names of columns
+		while((line = br.readLine()) != null) 
+		{
+		    String[] columns = line.split(csvSplitBy); // creates an array of strings that contain entries in each column
+		    Unit tempUnit = new Unit(columns[1]);
+		    
+		    model_.allStudents_.addElement(tempUnit);
+		    model_.uneditedStudents_.addElement(tempUnit);
+		    numberImported++;
+		}
+		System.out.println("number of students imported: " + numberImported); // for debugging purposes
+		br.close();
+	}
+	
+	/**
 	 * @precondition - importCSVStudentList is performed and there is a populated unedited student list
 	 * This function takes the input from a csv and loads it into the datamodel
 	 * @param csvFile
@@ -517,6 +545,7 @@ public class MainMenu extends JDialog implements Serializable
 		if(csvFile == null)
 			return;
 		
+		int numberEdited = 0;
 		String csvSplitBy = ",";
 		String line;
 		
@@ -536,7 +565,6 @@ public class MainMenu extends JDialog implements Serializable
 		    for(int i = 2; i < columns.length; i++)
 		    {
 		    	String tempPosConn = columns[i];
-		    	//System.out.print(" " + tempPosConn + " ");
 		    	for(int j = 0; j < model_.allStudents_.getSize(); j++)
 		    	{
 		    		if(model_.allStudents_.getElementAt(j).getName().equals(tempPosConn))
@@ -548,34 +576,9 @@ public class MainMenu extends JDialog implements Serializable
 		    }
 		    model_.uneditedStudents_.removeElement(tempUnit);
 		    model_.editedStudents_.addElement(tempUnit);
+		    numberEdited++;
 		}
-		br.close();
-	}
-	
-	/**
-	 * This function adds the students from the csv to the allstudent and uneditedlist
-	 * @param csvFile
-	 * @throws IOException
-	 */
-	public void importCSVStudentList(File csvFile) throws IOException
-	{
-		if(csvFile == null)
-			return;
-		
-		String csvSplitBy = ",";
-		String line;
-		BufferedReader br = new BufferedReader(new FileReader(csvFile));
-		line = br.readLine(); // skips first line that contains names of columns
-		System.out.println("Student List:");
-		while((line = br.readLine()) != null) 
-		{
-		    String[] columns = line.split(csvSplitBy); // creates an array of strings that contain entries in each column
-		    Unit tempUnit = new Unit(columns[1]);
-		    
-		    model_.allStudents_.addElement(tempUnit);
-		    model_.uneditedStudents_.addElement(tempUnit);
-		    System.out.println(tempUnit);
-		}
+		System.out.println("number of edited: " + numberEdited); // for debugging purposes, should match numberImported in importCSVStudentList
 		br.close();
 	}
 

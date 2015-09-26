@@ -57,6 +57,17 @@ public class Unit implements Serializable
 		posConnSize_ = posConns_.size();
 	}
 	
+	public void setPosConns(Unit u1, Unit u2, Unit u3, Unit u4, Unit u5)
+	{
+		posConns_ = new ArrayList<Unit>();
+		posConns_.add(u1);
+		posConns_.add(u2);
+		posConns_.add(u3);
+		posConns_.add(u4);
+		posConns_.add(u5);
+		posConnSize_ = posConns_.size();
+	}
+	
 	public void setPosConns(Unit[] posConn)
 	{
 		posConns_ = new ArrayList<Unit>();

@@ -78,16 +78,16 @@ public class Group
 			ArrayList<Unit> memPosConnsi = members_.get(i).getPosConns();
 			
 			middleLoop:
-			for (int x = 0; x < memPosConnsi.size(); x++)
+			for (int posConnIndex = 0; posConnIndex < memPosConnsi.size(); posConnIndex++)
 			{
-				Unit posConnx = memPosConnsi.get(x);
+				Unit posConnx = memPosConnsi.get(posConnIndex);
 				for (int j = 0; j < members_.size(); j++)
 				{
 					if(posConnx == members_.get(j))
 					{
-						if(x == 0)
+						if(posConnIndex == 0)
 							groupScore += 3;
-						else if(x == 1)
+						else if(posConnIndex == 1)
 							groupScore += 2;
 						else 
 							groupScore++;
