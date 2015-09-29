@@ -113,8 +113,12 @@ public class Group
 			{
 				if(j == i)
 					continue;
-				if(members_.get(i).getNegConn().equals(members_.get(j)))
+				if(members_.get(i).getNegConn() == null)
+					continue;
+				if(members_.get(i).getNegConn().name_.equals(members_.get(j).name_))
+				{
 					return j;
+				}
 			}
 		}
 		return -1;

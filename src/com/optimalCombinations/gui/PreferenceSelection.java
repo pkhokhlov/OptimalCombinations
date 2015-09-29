@@ -75,13 +75,26 @@ public class PreferenceSelection extends JDialog
 		undesiredBox1.setBounds(212, 202, 163, 22);
 		getContentPane().add(undesiredBox1);
 		// if the preferences are already set, it displays the set preferences
-		if(u.getPosConns().size() != 0)
+		int posConnSize = u.getPosConns().size();
+		if(posConnSize != 0)
 		{
 			desiredBox1.setSelectedIndex(desiredComboBox1.getIndexOf(u.getPosConns().get(0)));
-			desiredBox2.setSelectedIndex(desiredComboBox2.getIndexOf(u.getPosConns().get(1)));
-			desiredBox3.setSelectedIndex(desiredComboBox3.getIndexOf(u.getPosConns().get(2)));
-			desiredBox4.setSelectedIndex(desiredComboBox4.getIndexOf(u.getPosConns().get(3)));
-			desiredBox5.setSelectedIndex(desiredComboBox5.getIndexOf(u.getPosConns().get(4)));
+			if(posConnSize > 1)
+			{
+				desiredBox2.setSelectedIndex(desiredComboBox2.getIndexOf(u.getPosConns().get(1)));
+				if(posConnSize > 2)
+				{
+					desiredBox3.setSelectedIndex(desiredComboBox3.getIndexOf(u.getPosConns().get(2)));
+					if(posConnSize > 3)
+					{
+						desiredBox4.setSelectedIndex(desiredComboBox4.getIndexOf(u.getPosConns().get(3)));
+						if(posConnSize > 4)
+						{
+							desiredBox5.setSelectedIndex(desiredComboBox5.getIndexOf(u.getPosConns().get(4)));
+						}
+					}
+				}
+			}
 			undesiredBox1.setSelectedIndex(desiredComboBox1.getIndexOf(u.getNegConn()));
 		}
 		
