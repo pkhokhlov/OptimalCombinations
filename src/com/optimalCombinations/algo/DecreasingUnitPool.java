@@ -118,19 +118,36 @@ public class DecreasingUnitPool
 			throw new inadequatePoolSizeException();
 		
 		int highestScore = Integer.MIN_VALUE;
+		loopA:
 		for(int a = 0; a < pool_.size() - 4; a++)
 		{
+			loopB:
 			for(int b = a + 1; b < pool_.size() - 3; b++)
 			{
+				loopC:
 				for(int c = b + 1; c < pool_.size() - 2; c++)
 				{
+					loopD:
 					for(int d = c + 1; d < pool_.size() - 1; d++)
 					{
+						loopE:
 						for(int e = d + 1; e < pool_.size(); e++)
 						{
 							Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e)});
 							//if(temp.getMinUnitScore() < 1)
 								//continue;
+							int negConnIndex = temp.getIndexNegConn();
+							if(negConnIndex != -1)
+							{
+								switch (negConnIndex)
+								{
+									case 0: continue loopA;
+									case 1: continue loopB;
+									case 2: continue loopC;
+									case 3: continue loopD;
+									case 4: continue loopE;
+								}
+							}
 							int gScore = temp.getGroupScore();
 							if(gScore > highestScore)
 							{

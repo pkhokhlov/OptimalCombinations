@@ -26,7 +26,7 @@ public class Group
 	ArrayList<Unit> members_ = new ArrayList<Unit>();
 	int groupSize_;
 	int minimumUnitStrength_;
-	boolean flag_=false;
+	boolean flag_ = false;
 	
 	Group()
 	{
@@ -66,7 +66,7 @@ public class Group
 	/**
 	 * This function calculates the group strength.
 	 * This function works for any number of positive connections.
-	 * This function works if the negative connection is null.
+	 * This function does not use negConns. Refer to getGroupScoreNegConns
 	 * @return groupScore
 	 */
 	public int getGroupScore()
@@ -98,21 +98,26 @@ public class Group
 			}
 		}
 		
-		outerLoop:
+		return groupScore;
+	}
+	/**
+	 * This function returns the index of a negConn in the group.
+	 * @return index of negConn
+	 * @return 0 if there is none
+	 */
+	public int getIndexNegConn()
+	{
 		for(int i = 0; i < members_.size(); i++)
 		{
-			Unit negConni = members_.get(i).getNegConn();
 			for(int j = 0; j < members_.size(); j++)
 			{
-				if(negConni == members_.get(j))
-				{
-					groupScore -= 3;
-					continue outerLoop;
-				}
+				if(j == i)
+					continue;
+				if(members_.get(i).getNegConn().equals(members_.get(j)))
+					return j;
 			}
 		}
-		
-		return groupScore;
+		return -1;
 	}
 	
 	public int getMinUnitScore()
@@ -267,6 +272,58 @@ public class Group
 			result = result + members_.get(i) + ", ";
 		}
 		return  result + members_.get(members_.size() - 1) + "}" + "(" + getGroupScore() + ")"; 
+	}
+	
+	/**
+	 * This function calculates the group strength.
+	 * This function works for any number of positive connections.
+	 * This function works if the negative connection is null.
+	 * @return groupScore
+	 */
+	public int getGroupScoreNegConns()
+	{
+		int groupScore = 0;
+		for (int i = 0; i < members_.size(); i++)
+		{
+			members_.get(i).getPosConns().remove(null);
+			ArrayList<Unit> memPosConnsi = members_.get(i).getPosConns();
+			
+			middleLoop:
+			for (int posConnIndex = 0; posConnIndex < memPosConnsi.size(); posConnIndex++)
+			{
+				Unit posConnx = memPosConnsi.get(posConnIndex);
+				for (int j = 0; j < members_.size(); j++)
+				{
+					if(posConnx == members_.get(j))
+					{
+						if(posConnIndex == 0)
+							groupScore += 3;
+						else if(posConnIndex == 1)
+							groupScore += 2;
+						else 
+							groupScore++;
+						
+						continue middleLoop; // does not go further in comparing once match is found
+					}
+				}
+			}
+		}
+		
+		outerLoop:
+		for(int i = 0; i < members_.size(); i++)
+		{
+			Unit negConni = members_.get(i).getNegConn();
+			for(int j = 0; j < members_.size(); j++)
+			{
+				if(negConni == members_.get(j))
+				{
+					groupScore -= 3;
+					continue outerLoop;
+				}
+			}
+		}
+		
+		return groupScore;
 	}
 
 	/**

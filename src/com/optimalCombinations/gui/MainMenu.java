@@ -553,13 +553,12 @@ public class MainMenu extends JDialog implements Serializable
 		line = br.readLine(); // skips first line that contains names of columns
 		while ((line = br.readLine()) != null) 
 		{
-			Unit tempUnit = model_.uneditedStudents_.getElementAt(0);
+			// works because tempUnit is removed each iteration
+			Unit tempUnit = model_.uneditedStudents_.getElementAt(0); 
 			// creates an array of strings that contain entries in each column
 		    String[] columns = line.split(csvSplitBy);
-		    
 		    // adds the student's preferences to the unit in the uneditedStudents
 		    ArrayList<Unit> studentPosCons = tempUnit.getPosConns();
-		    
 		    // goes through saved string array with names of posconns & adds them to posconn of student
 		    outerloop:
 		    for(int i = 2; i < columns.length; i++)

@@ -116,7 +116,7 @@ public class PreferenceSelection extends JDialog
 		lblDesiredGroupMember_5.setBounds(47, 156, 145, 22);
 		getContentPane().add(lblDesiredGroupMember_5);
 		
-		JLabel lblUndesiredGroupMember = new JLabel("Undesired Group Member:");
+		JLabel lblUndesiredGroupMember = new JLabel("Restricted Group Member:");
 		lblUndesiredGroupMember.setVerticalAlignment(SwingConstants.TOP);
 		lblUndesiredGroupMember.setBounds(47, 206, 182, 22);
 		getContentPane().add(lblUndesiredGroupMember);
