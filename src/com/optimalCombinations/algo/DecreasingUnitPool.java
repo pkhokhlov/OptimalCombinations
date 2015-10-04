@@ -211,7 +211,41 @@ public class DecreasingUnitPool
 		}
 		else if(remaining.size() == 2)
 		{
+			for(Group generatedGrp: strongestGroups_.groupSet_)
+			{
+				ArrayList<Unit> tempPool = new ArrayList<Unit>();
+				putIntoArrayList(remaining, tempPool);
+				putIntoArrayList(generatedGrp, tempPool);
+				DecreasingUnitPool tempAlgo = new DecreasingUnitPool(tempPool, 3);
+				GroupSet tempSet = tempAlgo.findStrongestGroups();
+				int avgStrength = tempSet.getAverageStrengthPerGroup();
+				if(avgStrength > hiSetStrength)
+					finalSet = tempSet;
+			}
 			
+			ArrayList<Group> toRemove = new ArrayList<Group>();	
+			for(Group gStrongestGroups: strongestGroups_.groupSet_)
+			{
+				for(Group gFinalSet: finalSet.groupSet_)
+				{
+					if(gStrongestGroups.containsMembersOf(gFinalSet))
+					{
+						if(!toRemove.contains(gStrongestGroups))
+							toRemove.add(gStrongestGroups);
+					}
+				}
+			}
+			
+			for(Group g: toRemove)
+			{
+				strongestGroups_.remove(g);
+			}
+			
+			for(Group g: finalSet.groupSet_)
+			{
+				strongestGroups_.add(g);
+			}
+			pool_ = new ArrayList<Unit>(); // TODO: make sure that the remaining people that are not included in remaining are not deleted
 		}
 		else if(remaining.size() == 1)
 		{
@@ -255,7 +289,6 @@ public class DecreasingUnitPool
 			for(Group g: finalSet.groupSet_)
 			{
 				strongestGroups_.add(g);
-				System.out.println(g);
 			}
 			pool_ = new ArrayList<Unit>(); // TODO: make sure that the remaining people that are not included in remaining are not deleted
 		}
