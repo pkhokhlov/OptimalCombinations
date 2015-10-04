@@ -74,7 +74,7 @@ import javax.swing.JScrollPane;
  * TODO: have settings tab for algo parameters
  * TODO: when generating rooms, generate automatic text file and ask to save later
  * TODO: evaluate a group separately
- * TODO: when hitting cancel on save, don't make it so that it loses progress
+ * TODO: when hitting cancel on save, make it so that it doesn't lose progress
  */
 public class MainMenu extends JDialog implements Serializable
 {

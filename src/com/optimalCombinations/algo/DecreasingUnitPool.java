@@ -20,10 +20,6 @@ package com.optimalCombinations.algo;
 import java.util.ArrayList;
 
 /**
- * top 5 for preferences 
- * TODO: add functionality where one student CANNOT be with another, not negconn
- *     - troublemaker factor
- *         - make sure last remaining people get a group if the remainder has people they can't be with
  *     
  * 
  */
@@ -53,15 +49,26 @@ public class DecreasingUnitPool
 			throw new inadequatePoolSizeException();
 		
 		int highestScore = Integer.MIN_VALUE;
+		loopA:
 		for(int a = 0; a < pool_.size() - 2; a++)
 		{
+			loopB:
 			for(int b = a + 1; b < pool_.size() - 1; b++)
 			{
+				loopC:
 				for(int c = b + 1; c < pool_.size(); c++)
 				{
 					Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c)});
-					//if(temp.getMinUnitScore() < 1)
-					//	continue;
+					int negConnIndex = temp.getIndexNegConn();
+					if(negConnIndex != -1)
+					{
+						switch (negConnIndex)
+						{
+							case 0: continue loopA;
+							case 1: continue loopB;
+							case 2: continue loopC;
+						}
+					}
 					int gScore = temp.getGroupScore();
 					if(gScore > highestScore)
 					{
@@ -84,17 +91,30 @@ public class DecreasingUnitPool
 			throw new inadequatePoolSizeException();
 		
 		int highestScore = Integer.MIN_VALUE;
+		loopA:
 		for(int a = 0; a < pool_.size() - 3; a++)
 		{
+			loopB:
 			for(int b = a + 1; b < pool_.size() - 2; b++)
 			{
+				loopC:
 				for(int c = b + 1; c < pool_.size() - 1; c++)
 				{
+					loopD:
 					for(int d = c + 1; d < pool_.size(); d++)
 					{
 						Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d)});
-						//if(temp.getMinUnitScore() < 1)
-						//	continue;
+						int negConnIndex = temp.getIndexNegConn();
+						if(negConnIndex != -1)
+						{
+							switch (negConnIndex)
+							{
+								case 0: continue loopA;
+								case 1: continue loopB;
+								case 2: continue loopC;
+								case 3: continue loopD;
+							}
+						}
 						int gScore = temp.getGroupScore();
 						if(gScore > highestScore)
 						{
@@ -134,8 +154,6 @@ public class DecreasingUnitPool
 						for(int e = d + 1; e < pool_.size(); e++)
 						{
 							Group temp = new Group(new Unit[]{pool_.get(a), pool_.get(b), pool_.get(c), pool_.get(d), pool_.get(e)});
-							//if(temp.getMinUnitScore() < 1)
-								//continue;
 							int negConnIndex = temp.getIndexNegConn();
 							if(negConnIndex != -1)
 							{
@@ -166,13 +184,80 @@ public class DecreasingUnitPool
 	 * @precondition: best_ contains the most recently calculated strongest group
 	 * @postcondition: all members of best_ are removed from pool_
 	 */
-	public void removeFromPool()
+	public void removeBestGroupFromPool()
 	{
 		System.out.println(best_);
 		for(int i = 0; i < best_.getMembers().size(); i++)
 		{
 			
 			pool_.remove(best_.getMembers().get(i));
+		}
+	}
+	
+	/**
+	 * Only implemented for groups of size 4.
+	 * @precondition strongestGroups_ contains only groups of size groupSize_
+	 * @precondition pool_.size() < groupSize_
+	 * @precondition groupSize_ == 4
+	 * @param remaining
+	 */
+	public void resizeAndInsertRemaining(ArrayList<Unit> remaining)
+	{
+		GroupSet finalSet = new GroupSet();
+		int hiSetStrength = Integer.MIN_VALUE;
+		if(remaining.size() == 3)
+		{
+			
+		}
+		else if(remaining.size() == 2)
+		{
+			
+		}
+		else if(remaining.size() == 1)
+		{
+			for(int i = 0; i < strongestGroups_.size(); i++)
+			{
+				for(int j = 0; j < strongestGroups_.size(); j++)
+				{
+					if(i == j)
+						continue;
+					
+					ArrayList<Unit> tempPool = new ArrayList<Unit>();
+					putIntoArrayList(remaining, tempPool);
+					putIntoArrayList(strongestGroups_.get(i), tempPool);
+					putIntoArrayList(strongestGroups_.get(j), tempPool);
+					DecreasingUnitPool tempAlgo = new DecreasingUnitPool(tempPool, 3);
+					GroupSet tempSet = tempAlgo.findStrongestGroups();
+					int avgStrength = tempSet.getAverageStrengthPerGroup();
+					if(avgStrength > hiSetStrength)
+						finalSet = tempSet;
+				}
+			}
+			
+			ArrayList<Group> toRemove = new ArrayList<Group>();	
+			for(Group gStrongestGroups: strongestGroups_.groupSet_)
+			{
+				for(Group gFinalSet: finalSet.groupSet_)
+				{
+					if(gStrongestGroups.containsMembersOf(gFinalSet))
+					{
+						if(!toRemove.contains(gStrongestGroups))
+							toRemove.add(gStrongestGroups);
+					}
+				}
+			}
+			
+			for(Group g: toRemove)
+			{
+				strongestGroups_.remove(g);
+			}
+			
+			for(Group g: finalSet.groupSet_)
+			{
+				strongestGroups_.add(g);
+				System.out.println(g);
+			}
+			pool_ = new ArrayList<Unit>(); // TODO: make sure that the remaining people that are not included in remaining are not deleted
 		}
 	}
 	
@@ -234,7 +319,7 @@ public class DecreasingUnitPool
 						break;
 					}
 					strongestGroups_.add(best_);
-					removeFromPool();
+					removeBestGroupFromPool();
 				}
 				break;
 			case 4:
@@ -246,11 +331,11 @@ public class DecreasingUnitPool
 					} 
 					catch (inadequatePoolSizeException e)
 					{
-						insertIntoOptimalGroup(pool_);
+						resizeAndInsertRemaining(pool_);
 						break;
 					}
 					strongestGroups_.add(best_);
-					removeFromPool();
+					removeBestGroupFromPool();
 				}
 				break;
 			case 5:
@@ -266,12 +351,30 @@ public class DecreasingUnitPool
 						break;
 					}
 					strongestGroups_.add(best_);
-					removeFromPool();
+					removeBestGroupFromPool();
 				}
 				break;
 		}
 		strongestGroups_.alphabetize();
 		return strongestGroups_;
+	}
+	
+	public void putIntoArrayList(Group group, ArrayList<Unit> destination)
+	{
+		for(Unit u: group.members_)
+		{
+			if(!destination.contains(u))
+				destination.add(u);
+		}
+	}
+	
+	public void putIntoArrayList(ArrayList<Unit> list, ArrayList<Unit> destination)
+	{
+		for(Unit u: list)
+		{
+			if(!destination.contains(u))
+				destination.add(u);
+		}
 	}
 	
 	class inadequatePoolSizeException extends Exception

@@ -63,6 +63,16 @@ public class Group
 		members_.remove(u);
 	}
 	
+	public boolean containsMembersOf(Group other)
+	{
+		for(Unit u: other.getMembers())
+		{
+			if(members_.contains(u))
+				return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * This function calculates the group strength.
 	 * This function works for any number of positive connections.
