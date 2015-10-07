@@ -189,7 +189,6 @@ public class DecreasingUnitPool
 		System.out.println(best_);
 		for(int i = 0; i < best_.getMembers().size(); i++)
 		{
-			
 			pool_.remove(best_.getMembers().get(i));
 		}
 	}
@@ -392,7 +391,7 @@ public class DecreasingUnitPool
 		return strongestGroups_;
 	}
 	
-	public void putIntoArrayList(Group group, ArrayList<Unit> destination)
+	public static void putIntoArrayList(Group group, ArrayList<Unit> destination)
 	{
 		for(Unit u: group.members_)
 		{
@@ -401,7 +400,7 @@ public class DecreasingUnitPool
 		}
 	}
 	
-	public void putIntoArrayList(ArrayList<Unit> list, ArrayList<Unit> destination)
+	public static void putIntoArrayList(ArrayList<Unit> list, ArrayList<Unit> destination)
 	{
 		for(Unit u: list)
 		{

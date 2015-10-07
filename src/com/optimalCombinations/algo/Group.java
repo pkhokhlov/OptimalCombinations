@@ -42,6 +42,15 @@ public class Group
 		groupSize_ = members_.size();
 	}
 	
+	public Group(ArrayList<Unit> units)
+	{
+		for(Unit u: units)
+		{
+			addUnit(u);
+		}
+		groupSize_ = members_.size();
+	}
+	
 	public ArrayList<Unit> getMembers()
 	{
 		return members_;
