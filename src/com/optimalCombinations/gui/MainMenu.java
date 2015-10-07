@@ -38,6 +38,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.optimalCombinations.algo.DataModel;
 import com.optimalCombinations.algo.DecreasingUnitPool;
 import com.optimalCombinations.algo.GroupSet;
+import com.optimalCombinations.algo.StaticDecreasingUnitPool;
 import com.optimalCombinations.algo.Unit;
 
 import java.awt.Desktop;
@@ -724,8 +725,15 @@ public class MainMenu extends JDialog implements Serializable
 			model_.editedStudents_.copyInto(temp);
 			ArrayList<Unit> edited = new ArrayList<Unit>(Arrays.asList(temp));
 			
-			DecreasingUnitPool result = new DecreasingUnitPool(edited, size);
-			finalList_ = result.findStrongestGroups();
+			if(size == 4)
+			{
+				finalList_ = StaticDecreasingUnitPool.generateRoomsSize4NoRemainder(edited);
+			}
+			else
+			{
+				DecreasingUnitPool result = new DecreasingUnitPool(edited, size);
+				finalList_ = result.findStrongestGroups();
+			}
 			fileChooserIntoTextFile();
 		}
 	}

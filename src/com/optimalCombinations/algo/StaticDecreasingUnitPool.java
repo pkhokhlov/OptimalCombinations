@@ -19,8 +19,10 @@ package com.optimalCombinations.algo;
 
 import java.util.ArrayList;
 
-import com.optimalCombinations.algo.DecreasingUnitPool.inadequatePoolSizeException;
-
+/*
+ * TODO: add options that show the sequence of group sizes
+ *
+ */
 public class StaticDecreasingUnitPool
 {
 	/**
@@ -29,12 +31,12 @@ public class StaticDecreasingUnitPool
 	 * @param groupSize
 	 * @return
 	 */
-	public static GroupSet generateRooms(ArrayList<Unit> pool, int groupSize)
+	/*public static GroupSet generateRooms(ArrayList<Unit> pool, int groupSize)
 	{
 		GroupSet strongestGroups;
 		
 		
-	}
+	}*/
 	
 	/**
 	 * returns the strongest groups with the remainders as their separate group
@@ -54,9 +56,29 @@ public class StaticDecreasingUnitPool
 		return strongestGroups;
 	}
 	
+	/**
+	 * Finds rooms of size 3 until the size of the pool is evenly divisible by 4
+	 * @param pool
+	 * @return
+	 */
 	public static GroupSet generateRoomsSize4NoRemainder(ArrayList<Unit> pool)
 	{
+		GroupSet strongestGroups = new GroupSet();
+		while((pool.size() % 4) != 0)
+		{
+			Group best = findBestGroupSize3(pool);
+			strongestGroups.add(best);
+			removeGroupFromList(pool, best);
+		}
 		
+		while(pool.size() > 0)
+		{
+			Group best = findBestGroupSize4(pool);
+			strongestGroups.add(best);
+			removeGroupFromList(pool, best);
+		}
+		
+		return strongestGroups;
 	}
 	
 	public static GroupSet generateRoomsSize3(ArrayList<Unit> pool)
