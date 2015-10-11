@@ -35,7 +35,6 @@ public class StaticDecreasingUnitPool
 	{
 		GroupSet strongestGroups;
 		
-		
 	}*/
 	
 	/**
@@ -207,6 +206,114 @@ public class StaticDecreasingUnitPool
 							{
 								highestScore = gScore;
 								best = grpTemp;
+							}
+						}
+					}
+				}
+			}
+		}
+		return best;
+	}
+	
+	public static Group findBestGroupSize6(ArrayList<Unit> pool)
+	{
+		Group best = new Group();
+		int highestScore = Integer.MIN_VALUE;
+		loopA:
+		for(int a = 0; a < pool.size() - 5; a++)
+		{
+			loopB:
+			for(int b = a + 1; b < pool.size() - 4; b++)
+			{
+				loopC:
+				for(int c = b + 1; c < pool.size() - 3; c++)
+				{
+					loopD:
+					for(int d = c + 1; d < pool.size() - 2; d++)
+					{
+						loopE:
+						for(int e = d + 1; e < pool.size() - 1; e++)
+						{
+							loopF:
+							for(int f = e + 1; f < pool.size(); f++)
+							{
+								Group grpTemp = new Group(new Unit[]{pool.get(a), pool.get(b), pool.get(c), pool.get(d), pool.get(e), pool.get(f)});
+								int negConnIndex = grpTemp.getIndexNegConn();
+								if(negConnIndex != -1)
+								{
+									switch (negConnIndex)
+									{
+										case 0: continue loopA;
+										case 1: continue loopB;
+										case 2: continue loopC;
+										case 3: continue loopD;
+										case 4: continue loopE;
+										case 5: continue loopF;
+									}
+								}
+								int gScore = grpTemp.getGroupScore();
+								if(gScore > highestScore)
+								{
+									highestScore = gScore;
+									best = grpTemp;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return best;
+	}
+	
+	public static Group findBestGroupSize7(ArrayList<Unit> pool)
+	{
+		Group best = new Group();
+		int highestScore = Integer.MIN_VALUE;
+		loopA:
+		for(int a = 0; a < pool.size() - 6; a++)
+		{
+			loopB:
+			for(int b = a + 1; b < pool.size() - 5; b++)
+			{
+				loopC:
+				for(int c = b + 1; c < pool.size() - 4; c++)
+				{
+					loopD:
+					for(int d = c + 1; d < pool.size() - 3; d++)
+					{
+						loopE:
+						for(int e = d + 1; e < pool.size() - 2; e++)
+						{
+							loopF:
+							for(int f = e + 1; f < pool.size() - 1; f++)
+							{
+								loopG:
+								for(int g = f + 1; g < pool.size(); g++)
+								{
+									Group grpTemp = new Group(new Unit[]
+											{pool.get(a), pool.get(b), pool.get(c), pool.get(d), pool.get(e), pool.get(f), pool.get(g)});
+									int negConnIndex = grpTemp.getIndexNegConn();
+									if(negConnIndex != -1)
+									{
+										switch (negConnIndex)
+										{
+											case 0: continue loopA;
+											case 1: continue loopB;
+											case 2: continue loopC;
+											case 3: continue loopD;
+											case 4: continue loopE;
+											case 5: continue loopF;
+											case 6: continue loopG;
+										}
+									}
+									int gScore = grpTemp.getGroupScore();
+									if(gScore > highestScore)
+									{
+										highestScore = gScore;
+										best = grpTemp;
+									}
+								}
 							}
 						}
 					}
