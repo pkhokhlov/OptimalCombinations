@@ -19,77 +19,63 @@ package com.optimalCombinations.algo;
 
 import java.util.ArrayList;
 
-/*
- * TODO: add options that show the sequence of group sizes
- *
- */
 public class StaticDecreasingUnitPool
-{
-	/**
-	 * include more parameters for different algos
-	 * @param pool
-	 * @param groupSize
-	 * @return
-	 */
-	/*public static GroupSet generateRooms(ArrayList<Unit> pool, int groupSize)
-	{
-		GroupSet strongestGroups;
-		
-	}*/
-	
-	/**
-	 * returns the strongest groups with the remainders as their separate group
-	 * @param pool
-	 * @return
-	 */
-	public static GroupSet generateRoomsSize4WithRemainder(ArrayList<Unit> pool)
+{	
+	public static GroupSet generateRoomsFromSequence(ArrayList<Unit> pool, ArrayList<Integer> sequence)
 	{
 		GroupSet strongestGroups = new GroupSet();
-		while(pool.size() >= 4)
+		for(int i: sequence)
 		{
-			Group best = findBestGroupSize4(pool);
+			Group best = findBestGroup(i, pool);
 			strongestGroups.add(best);
 			removeGroupFromList(pool, best);
 		}
-		strongestGroups.add(new Group(pool));
 		return strongestGroups;
+	}
+	
+	public static Group findBestGroup(int size, ArrayList<Unit> pool)
+	{
+		switch(size)
+		{
+			case 2: return findBestGroupSize2(pool);
+			case 3: return findBestGroupSize3(pool);
+			case 4: return findBestGroupSize4(pool);
+			case 5: return findBestGroupSize5(pool);
+			case 6: return findBestGroupSize6(pool);
+			case 7: return findBestGroupSize7(pool);
+		}	
+		return null;
 	}
 	
-	/**
-	 * Finds rooms of size 3 until the size of the pool is evenly divisible by 4
-	 * @param pool
-	 * @return
-	 */
-	public static GroupSet generateRoomsSize4NoRemainder(ArrayList<Unit> pool)
+	public static Group findBestGroupSize2(ArrayList<Unit> pool)
 	{
-		GroupSet strongestGroups = new GroupSet();
-		while((pool.size() % 4) != 0)
+		Group best = new Group();
+		int highestScore = Integer.MIN_VALUE;
+		loopA:
+		for(int a = 0; a < pool.size() - 1; a++)
 		{
-			Group best = findBestGroupSize3(pool);
-			strongestGroups.add(best);
-			removeGroupFromList(pool, best);
+			loopB:
+			for(int b = a + 1; b < pool.size(); b++)
+			{
+				Group grpTemp = new Group(new Unit[]{pool.get(a), pool.get(b)});
+				int negConnIndex = grpTemp.getIndexNegConn();
+				if(negConnIndex != -1)
+				{
+					switch (negConnIndex)
+					{
+						case 0: continue loopA;
+						case 1: continue loopB;
+					}
+				}
+				int gScore = grpTemp.getGroupScore();
+				if(gScore > highestScore)
+				{
+					highestScore = gScore;
+					best = grpTemp;
+				}
+			}
 		}
-		
-		while(pool.size() > 0)
-		{
-			Group best = findBestGroupSize4(pool);
-			strongestGroups.add(best);
-			removeGroupFromList(pool, best);
-		}
-		
-		return strongestGroups;
-	}
-	
-	public static GroupSet generateRoomsSize3(ArrayList<Unit> pool)
-	{
-		GroupSet strongestGroups = new GroupSet();
-		while(pool.size() >= 3)
-		{
-			Group best = findBestGroupSize3(pool);
-			strongestGroups.add(best);
-			removeGroupFromList(pool, best);
-		}
-		return strongestGroups;
+		return best;
 	}
 	
 	public static Group findBestGroupSize3(ArrayList<Unit> pool)
@@ -321,49 +307,6 @@ public class StaticDecreasingUnitPool
 			}
 		}
 		return best;
-	}
-	
-	public static void resizeAndInsertRemainders(GroupSet grpSet, ArrayList<Unit> remaining)
-	{
-		GroupSet finalSet = new GroupSet();
-		int hiSetStrength = Integer.MIN_VALUE;
-		if(remaining.size() == 2)
-		{
-			// can make this next block a function and elminate any conditions on remainder's size
-			for(Group existingGrp: grpSet.groupSet_)
-			{
-				ArrayList<Unit> tempPool = new ArrayList<Unit>();
-				DecreasingUnitPool.putIntoArrayList(remaining, tempPool);
-				DecreasingUnitPool.putIntoArrayList(existingGrp, tempPool);
-				GroupSet tempSet = generateRoomsSize3(tempPool);
-				int avgStrength = tempSet.getAverageStrengthPerGroup();
-				if(avgStrength > hiSetStrength)
-					finalSet = tempSet;
-			}
-			
-			ArrayList<Group> toRemove = new ArrayList<Group>();	
-			for(Group existingGrp: grpSet.groupSet_)
-			{
-				for(Group finalizedGrp: finalSet.groupSet_)
-				{
-					if(existingGrp.containsMembersOf(finalizedGrp))
-					{
-						if(!toRemove.contains(existingGrp))
-							toRemove.add(existingGrp);
-					}
-				}
-			}
-			
-			for(Group removedGrp: toRemove)
-			{
-				grpSet.remove(removedGrp);
-			}
-			
-			for(Group finalGrp: finalSet.groupSet_)
-			{
-				grpSet.add(finalGrp);
-			}
-		}
 	}
 	
 	public static void removeGroupFromList(ArrayList<Unit> list, Group grp)

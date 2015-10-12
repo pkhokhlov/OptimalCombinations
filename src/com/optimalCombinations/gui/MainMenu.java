@@ -36,8 +36,8 @@ import javax.swing.JLabel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.optimalCombinations.algo.DataModel;
-import com.optimalCombinations.algo.DecreasingUnitPool;
 import com.optimalCombinations.algo.GroupSet;
+import com.optimalCombinations.algo.RoomSizeCombinations;
 import com.optimalCombinations.algo.StaticDecreasingUnitPool;
 import com.optimalCombinations.algo.Unit;
 
@@ -72,8 +72,6 @@ import javax.swing.JScrollPane;
  * TODO: search within list
  * TODO: In selecting preferences, remove a student from the other preferences if it is selected in one
  * 			- eliminates duplicate choices dialog
- * TODO: have settings tab for algo parameters
- * TODO: when generating rooms, generate automatic text file and ask to save later
  * TODO: evaluate a group separately
  * TODO: when hitting cancel on save, make it so that it doesn't lose progress
  */
@@ -83,31 +81,30 @@ public class MainMenu extends JDialog implements Serializable
 	DataModel model_ = new DataModel();
 	File savedFile_ = null;
 	File savedStudentListFile_ = null;
-	
+
 	JMenuBar menuBar_;
 	JMenu menuFile_;
 	JMenuItem menuItemSave_;
 	JMenuItem menuItemOpen_;
 	JMenuItem menuItemImportClassList_;
-	
+
 	final JList<Unit> uneditedStudentList_;
 	final JList<Unit> editedStudentList_;
 	JList<Unit> lastFocusedStudents_;
-	
+
 	JLabel lblUneditedStudents_;
 	JLabel lblEditedStudents_;
-	
+
 	JButton btnEditPrefs_;
 	JButton btnAddStudent_;
 	JButton btnRemoveStudent_;
 	JButton btnNext_;
 	JButton btnExit_;
-	
+
 	GroupSet finalList_ = new GroupSet();
-	private JMenuItem menuItemSaveAs_;
-	private JScrollPane editedStudentScrollPane_;
-	private JScrollPane uneditedStudentScrollPane_;
-	
+	JMenuItem menuItemSaveAs_;
+	JScrollPane editedStudentScrollPane_;
+	JScrollPane uneditedStudentScrollPane_;
 
 	/**
 	 * Launch the application.
@@ -120,13 +117,12 @@ public class MainMenu extends JDialog implements Serializable
 			MainMenu dialog = new MainMenu();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
-		}
-		catch (Exception e)
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Constructor for the gui.
 	 */
@@ -283,7 +279,7 @@ public class MainMenu extends JDialog implements Serializable
 			public void actionPerformed(ActionEvent arg0)
 			{
 				int size;
-				Object[] possibilities = {"3", "4", "5"};
+				Object[] possibilities = {"3", "4", "5", "6", "7"};
 				String s = (String)JOptionPane.showInputDialog(
 	                    new JFrame(),
 	                    "Please select the size of the group",
@@ -291,16 +287,92 @@ public class MainMenu extends JDialog implements Serializable
 	                    JOptionPane.PLAIN_MESSAGE,
 	                    null,
 	                    possibilities,
-	                    "4");
+	                    possibilities[0]);
 
 						// if a value is set
 						if ((s != null) && (s.length() > 0)) 
 						{
 							size = Integer.parseInt(s);
-							
+							ArrayList<Integer> finalSequence = new ArrayList<Integer>();
+							finalSequence.add(-1);
+							int poolSize = editedStudentList_.getModel().getSize();
+							if(poolSize % size == 0)
+							{
+								finalSequence = new ArrayList<Integer>();
+								for(int i = 0; i < poolSize; i++)
+								{
+									finalSequence.add(size);
+								}
+							}
+							else
+							{
+								// TODO: ask for min and max group size
+								String[] minGroupSizes = new String[]{"2", "3", "4", "5", "6"};
+								String strMinGroupSize = (String)JOptionPane.showInputDialog(
+					                    new JFrame(),
+					                    "Because your class size is not evenly divisible by \n"
+					                    + "your desired group size,\nPlease select smallest group you will allow",
+					                    "DC Trip Room Generator", 
+					                    JOptionPane.PLAIN_MESSAGE,
+					                    null,
+					                    minGroupSizes,
+					                    minGroupSizes[0]);
+								int minGroupSize = Integer.parseInt(strMinGroupSize);
+								String[] maxGroupSizes = new String[]{"3", "4", "5", "6", "7"};
+								String strMaxGroupSize = (String)JOptionPane.showInputDialog(
+					                    new JFrame(),
+					                    "Please select largest group you will allow",
+					                    "DC Trip Room Generator", 
+					                    JOptionPane.PLAIN_MESSAGE,
+					                    null,
+					                    maxGroupSizes,
+					                    maxGroupSizes[0]);
+								int maxGroupSize = Integer.parseInt(strMaxGroupSize);
+								int[] sizes = new int[]{maxGroupSize};
+								if(maxGroupSize != minGroupSize)
+								{
+									sizes = new int[maxGroupSize - minGroupSize + 1];
+									int index = 0;
+									for(int i = minGroupSize; i <= maxGroupSize; i++)
+									{
+										sizes[index] = i;
+										index++;
+									}
+								}
+								ArrayList<ArrayList<Integer>> sequenceOfSizes = RoomSizeCombinations.generateCombinations(poolSize, sizes);
+								int numSequences = sequenceOfSizes.size();
+								Object[] sequences = new Object[numSequences];
+								for(int i = 0; i < numSequences; i++)
+								{
+									sequences[i] = sequenceOfSizes.get(i).toString();
+								}
+								String chosenRoomSizeSequence = (String)JOptionPane.showInputDialog(
+					                    new JFrame(),
+					                    "Please select the order of group sizes you would like",
+					                    "DC Trip Room Generator", 
+					                    JOptionPane.PLAIN_MESSAGE,
+					                    null,
+					                    sequences,
+					                    sequences[0]);
+								if(chosenRoomSizeSequence != null)
+								{
+									int seqIndex = 0;
+									for(int i = 0; i < sequences.length; i++) 
+									{
+										if(sequences[i].equals(chosenRoomSizeSequence))
+										{
+											seqIndex = i;
+											break;
+										}
+									}
+									finalSequence = sequenceOfSizes.get(seqIndex);	
+								}
+							}
 							try
 							{
-								generateAndReturnRooms(size);
+								if(finalSequence.get(0) == -1)
+									return;
+								generateAndReturnRooms(size, finalSequence);
 							} 
 							catch (FileNotFoundException e)
 							{
@@ -374,7 +446,21 @@ public class MainMenu extends JDialog implements Serializable
 			}
 		});
 		
-		menuItemImportClassList_ = new JMenuItem("Import Class List...");
+		menuFile_.add(menuItemOpen_);
+		menuFile_.add(menuItemSave_);
+
+		menuItemSaveAs_ = new JMenuItem("Save As...");
+		menuItemSaveAs_.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				saveAsDataModel();
+			}
+		});
+		menuFile_.add(menuItemSaveAs_);
+		
+		menuItemImportClassList_ = new JMenuItem("Import CSV...");
 		menuItemImportClassList_.addActionListener(new ActionListener()
 		{
 			@Override
@@ -393,21 +479,7 @@ public class MainMenu extends JDialog implements Serializable
 				} 
 			}
 		});
-		
-		menuFile_.add(menuItemOpen_);
-		menuFile_.add(menuItemSave_);
 		menuFile_.add(menuItemImportClassList_);
-
-		menuItemSaveAs_ = new JMenuItem("Save As...");
-		menuItemSaveAs_.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-				saveAsDataModel();
-			}
-		});
-		menuFile_.add(menuItemSaveAs_);
 		
 		
 		btnRemoveStudent_.addActionListener(new ActionListener()
@@ -428,10 +500,14 @@ public class MainMenu extends JDialog implements Serializable
 			}
 		});
 	}
-	
+
 	/**
-	 * This function sets the model_ and all the JLists to display a saved version of the program.
-	 * @param model - the model_ that contains all the data that should be displayed
+	 * This function sets the model_ and all the JLists to display a saved
+	 * version of the program.
+	 * 
+	 * @param model
+	 *            - the model_ that contains all the data that should be
+	 *            displayed
 	 */
 	public void setDataModel(DataModel model)
 	{
@@ -439,146 +515,161 @@ public class MainMenu extends JDialog implements Serializable
 		editedStudentList_.setModel(model_.editedStudents_);
 		uneditedStudentList_.setModel(model_.uneditedStudents_);
 	}
-	
+
 	/**
 	 * @return model - the DataModel from the file being read
 	 */
 	public DataModel extractDataModel(File file)
 	{
 		DataModel model = null;
-		if(file == null)
+		if (file == null)
 			return model_;
-		
-		try
-        {
-            FileInputStream fis = new FileInputStream(file);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            model = (DataModel) ois.readObject();
-            ois.close();
 
-            // Clean up the file
-            new File(file.getName()).delete();
-            
-            return model;
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+		try
+		{
+			FileInputStream fis = new FileInputStream(file);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			model = (DataModel) ois.readObject();
+			ois.close();
+
+			// Clean up the file
+			new File(file.getName()).delete();
+
+			return model;
+		} catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
 		return model;
 	}
-	
+
 	public File importDataModelFile()
 	{
 		File file = null;
 		JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter textFileOnlyFilter = new FileNameExtensionFilter(".proj", "proj", "project");
-        fileChooser.setFileFilter(textFileOnlyFilter);
-        int returnVal = fileChooser.showOpenDialog(new JFrame());
-        if (returnVal == JFileChooser.APPROVE_OPTION)
-        {
-            file = fileChooser.getSelectedFile();
-            savedFile_ = file;
-        }
-        
-        return file;
+		FileNameExtensionFilter textFileOnlyFilter = new FileNameExtensionFilter(
+				".proj", "proj", "project");
+		fileChooser.setFileFilter(textFileOnlyFilter);
+		int returnVal = fileChooser.showOpenDialog(new JFrame());
+		if (returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			file = fileChooser.getSelectedFile();
+			savedFile_ = file;
+		}
+
+		return file;
 	}
-	
+
 	/**
-	 * Imports the csv of the student list and saves it
-	 * Specs for CSV: 
-	 * column 0  - timestamp
-	 * column 1  - name of student
-	 * column 2+ - prefs in order
+	 * Imports the csv of the student list and saves it Specs for CSV: column 0
+	 * - timestamp column 1 - name of student column 2+ - prefs in order
 	 */
 	public File importStudentListFile()
 	{
 		File file = null;
 		JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter textFileOnlyFilter = new FileNameExtensionFilter(".csv", "csv", "csv");
-        fileChooser.setFileFilter(textFileOnlyFilter);
-        int returnVal = fileChooser.showOpenDialog(new JFrame());
-        if (returnVal == JFileChooser.APPROVE_OPTION)
-        {
-            file = fileChooser.getSelectedFile();
-            savedStudentListFile_ = file;
-        }
-        
-        return file;
+		FileNameExtensionFilter textFileOnlyFilter = new FileNameExtensionFilter(
+				".csv", "csv", "csv");
+		fileChooser.setFileFilter(textFileOnlyFilter);
+		int returnVal = fileChooser.showOpenDialog(new JFrame());
+		if (returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			file = fileChooser.getSelectedFile();
+			savedStudentListFile_ = file;
+		}
+
+		return file;
 	}
-	
+
 	/**
-	 * This function adds the students from the csv to the allstudent and uneditedlist
+	 * This function adds the students from the csv to the allstudent and
+	 * uneditedlist
+	 * 
 	 * @param csvFile
 	 * @throws IOException
 	 */
 	public void importCSVStudentList(File csvFile) throws IOException
 	{
-		if(csvFile == null)
+		if (csvFile == null)
 			return;
-		
+
 		int numberImported = 0;
 		String csvSplitBy = ",";
 		String line;
 		BufferedReader br = new BufferedReader(new FileReader(csvFile));
 		line = br.readLine(); // skips first line that contains names of columns
-		while((line = br.readLine()) != null) 
+		while ((line = br.readLine()) != null)
 		{
-		    String[] columns = line.split(csvSplitBy); // creates an array of strings that contain entries in each column
-		    Unit tempUnit = new Unit(columns[1]);
-		    
-		    model_.allStudents_.addElement(tempUnit);
-		    model_.uneditedStudents_.addElement(tempUnit);
-		    numberImported++;
+			String[] columns = line.split(csvSplitBy); // creates an array of
+														// strings that contain
+														// entries in each
+														// column
+			Unit tempUnit = new Unit(columns[1]);
+
+			model_.allStudents_.addElement(tempUnit);
+			model_.uneditedStudents_.addElement(tempUnit);
+			numberImported++;
 		}
-		System.out.println("number of students imported: " + numberImported); // for debugging purposes
+		System.out.println("number of students imported: " + numberImported); // for
+																				// debugging
+																				// purposes
 		br.close();
 	}
-	
+
 	/**
-	 * @precondition - importCSVStudentList is performed and there is a populated unedited student list
-	 * This function takes the input from a csv and loads it into the datamodel
+	 * @precondition - importCSVStudentList is performed and there is a
+	 *               populated unedited student list This function takes the
+	 *               input from a csv and loads it into the datamodel
 	 * @param csvFile
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void csvToDataModel(File csvFile) throws IOException
 	{
-		if(csvFile == null)
+		if (csvFile == null)
 			return;
-		
+
 		int numberEdited = 0;
 		String csvSplitBy = ",";
 		String line;
-		
+
 		BufferedReader br = new BufferedReader(new FileReader(csvFile));
 		line = br.readLine(); // skips first line that contains names of columns
-		while ((line = br.readLine()) != null) 
+		while ((line = br.readLine()) != null)
 		{
 			// works because tempUnit is removed each iteration
-			Unit tempUnit = model_.uneditedStudents_.getElementAt(0); 
+			Unit tempUnit = model_.uneditedStudents_.getElementAt(0);
 			// creates an array of strings that contain entries in each column
-		    String[] columns = line.split(csvSplitBy);
-		    // adds the student's preferences to the unit in the uneditedStudents
-		    ArrayList<Unit> studentPosCons = tempUnit.getPosConns();
-		    // goes through saved string array with names of posconns & adds them to posconn of student
-		    outerloop:
-		    for(int i = 2; i < columns.length; i++)
-		    {
-		    	String tempPosConn = columns[i];
-		    	for(int j = 0; j < model_.allStudents_.getSize(); j++)
-		    	{
-		    		if(model_.allStudents_.getElementAt(j).getName().equals(tempPosConn))
-		    		{
-		    			studentPosCons.add(model_.allStudents_.getElementAt(j));
-		    			continue outerloop;
-		    		}
-		    	}
-		    }
-		    model_.uneditedStudents_.removeElement(tempUnit);
-		    model_.editedStudents_.addElement(tempUnit);
-		    numberEdited++;
+			String[] columns = line.split(csvSplitBy);
+			// adds the student's preferences to the unit in the
+			// uneditedStudents
+			ArrayList<Unit> studentPosCons = tempUnit.getPosConns();
+			// goes through saved string array with names of posconns & adds
+			// them to posconn of student
+			outerloop: for (int i = 2; i < columns.length; i++)
+			{
+				String tempPosConn = columns[i];
+				for (int j = 0; j < model_.allStudents_.getSize(); j++)
+				{
+					if (model_.allStudents_.getElementAt(j).getName()
+							.equals(tempPosConn))
+					{
+						studentPosCons.add(model_.allStudents_.getElementAt(j));
+						continue outerloop;
+					}
+				}
+			}
+			model_.uneditedStudents_.removeElement(tempUnit);
+			model_.editedStudents_.addElement(tempUnit);
+			numberEdited++;
 		}
-		System.out.println("number of edited: " + numberEdited); // for debugging purposes, should match numberImported in importCSVStudentList
+		System.out.println("number of edited: " + numberEdited); // for
+																	// debugging
+																	// purposes,
+																	// should
+																	// match
+																	// numberImported
+																	// in
+																	// importCSVStudentList
 		br.close();
 	}
 
@@ -589,245 +680,255 @@ public class MainMenu extends JDialog implements Serializable
 	{
 		File file = null;
 		JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter textFileOnlyFilter = new FileNameExtensionFilter(".proj", "proj", "project");
-        fileChooser.setFileFilter(textFileOnlyFilter);
-        int returnVal = fileChooser.showSaveDialog(new JFrame());
-        if (returnVal == JFileChooser.APPROVE_OPTION)
-        {
-            file = fileChooser.getSelectedFile();
-			if (!file.getName().endsWith(".proj")) 
+		FileNameExtensionFilter textFileOnlyFilter = new FileNameExtensionFilter(
+				".proj", "proj", "project");
+		fileChooser.setFileFilter(textFileOnlyFilter);
+		int returnVal = fileChooser.showSaveDialog(new JFrame());
+		if (returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			file = fileChooser.getSelectedFile();
+			if (!file.getName().endsWith(".proj"))
 			{
 				file = new File(file.toString() + ".proj");
 			}
-        }
-        
-        if(file == null)
-        {
-        	return;
-        }
-        
+		}
+
+		if (file == null)
+		{
+			return;
+		}
+
 		try
-        {
-            FileOutputStream fos = new FileOutputStream(file);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            model_.saved_ = true;
-            oos.writeObject(model_);
-            oos.close();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+		{
+			FileOutputStream fos = new FileOutputStream(file);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			model_.saved_ = true;
+			oos.writeObject(model_);
+			oos.close();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
-	 
+
 	/**
 	 * This function saves the current model_ to an existing file.
+	 * 
 	 * @param file
 	 */
 	public void saveToFile(File file)
 	{
 		try
-        {
-            FileOutputStream fos = new FileOutputStream(file);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            model_.saved_ = true;
-            oos.writeObject(model_);
-            oos.close();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+		{
+			FileOutputStream fos = new FileOutputStream(file);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			model_.saved_ = true;
+			oos.writeObject(model_);
+			oos.close();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
-	
+
 	/**
-	 * This function opens a dialog for the user to edit the roommate preferences of a student.
-	 * @param selectedUnit - the unit whose preferences will be changed
+	 * This function opens a dialog for the user to edit the roommate
+	 * preferences of a student.
+	 * 
+	 * @param selectedUnit
+	 *            - the unit whose preferences will be changed
 	 */
 	public void editPreferences(Unit selectedUnit)
 	{
 		try
 		{
-			PreferenceSelection prefSelectDialog = new PreferenceSelection(selectedUnit, model_.uneditedStudents_, model_.editedStudents_, model_.allStudents_);
+			PreferenceSelection prefSelectDialog = new PreferenceSelection(
+					selectedUnit, model_.uneditedStudents_,
+					model_.editedStudents_, model_.allStudents_);
 			prefSelectDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			prefSelectDialog.setVisible(true);
-		} 
-		catch (Exception e)
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * This function opens the AddNewStudent dialog and adds a unit with the name inputed by the user through the dialog
-	 * to uneditedStudents_.
+	 * This function opens the AddNewStudent dialog and adds a unit with the
+	 * name inputed by the user through the dialog to uneditedStudents_.
 	 */
 	public void addStudent()
 	{
-		AddNewStudent addStudentDialog = new AddNewStudent(model_.allStudents_, model_.uneditedStudents_);
+		AddNewStudent addStudentDialog = new AddNewStudent(model_.allStudents_,
+				model_.uneditedStudents_);
 		addStudentDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		addStudentDialog.setVisible(true);
 	}
-	
+
 	/**
-	 * This function opens an option dialog and asks if the user would like to continue editing the class.
+	 * This function opens an option dialog and asks if the user would like to
+	 * continue editing the class.
+	 * 
 	 * @return returns true if yes is selected
 	 */
 	public boolean continueWithEditing()
 	{
-		Object[] options = {"Yes", "No"};
+		Object[] options = { "Yes", "No" };
 		int n = JOptionPane.showOptionDialog(new JFrame(),
-	    "Would you like to continue working with this class? \n"
-	    + "Hitting no will close the program.",
-	    "DC Room Generator",
-	    JOptionPane.YES_NO_OPTION,
-	    JOptionPane.QUESTION_MESSAGE,
-	    null,     //do not use a custom Icon
-	    options,  //the titles of buttons
-	    options[0]); //default button title
-		
-		return n == 0 ; // if "yes" to continue is selected
+				"Would you like to continue working with this class? \n"
+						+ "Hitting no will close the program.",
+				"DC Room Generator", JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE, null, // do not use a custom Icon
+				options, // the titles of buttons
+				options[0]); // default button title
+
+		return n == 0; // if "yes" to continue is selected
 	}
-	
+
 	/**
-	 * This function copies one DefaultComboBoxModel's units into another DefaultComboBoxModel.
-	 * @param toBeCopied - the DefaultComboBoxModel to be copied into another one
-	 * @return - a new DefaultComboBoxModel that contains all the units of toBeCopied
+	 * This function copies one DefaultComboBoxModel's units into another
+	 * DefaultComboBoxModel.
+	 * 
+	 * @param toBeCopied
+	 *            - the DefaultComboBoxModel to be copied into another one
+	 * @return - a new DefaultComboBoxModel that contains all the units of
+	 *         toBeCopied
 	 */
-	public static DefaultComboBoxModel<Unit> copyComboBoxModel(DefaultComboBoxModel<Unit> toBeCopied)
+	public static DefaultComboBoxModel<Unit> copyComboBoxModel(
+			DefaultComboBoxModel<Unit> toBeCopied)
 	{
 		DefaultComboBoxModel<Unit> result = new DefaultComboBoxModel<Unit>();
 		result.addElement(null);
-		for(int i = 0; i < toBeCopied.getSize(); i++)
+		for (int i = 0; i < toBeCopied.getSize(); i++)
 		{
 			result.addElement(toBeCopied.getElementAt(i));
 		}
 		return result;
 	}
-	
+
 	/**
-	 * This function generates rooms from the editedStudents_ using the DecreasingUnitPool algorithm 
-	 * and writes the result to a text file.
-	 * @param size - the size of the rooms
+	 * This function generates rooms from the editedStudents_ using the
+	 * DecreasingUnitPool algorithm and writes the result to a text file.
+	 * 
+	 * @param size
+	 *            - the size of the rooms
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException
 	 */
-	public void generateAndReturnRooms(int size) throws FileNotFoundException, UnsupportedEncodingException
+	public void generateAndReturnRooms(int size, ArrayList<Integer> sequence) throws FileNotFoundException,
+			UnsupportedEncodingException
 	{
-		if(size > model_.editedStudents_.getSize())
+		if (size > model_.editedStudents_.getSize())
 		{
 			JOptionPane.showMessageDialog(new JFrame(),
-					"Error: The class size is larger than the number of students.");
+							"Error: The class size is larger than the number of students.");
 		}
 		else
 		{
 			Unit[] temp = new Unit[model_.editedStudents_.getSize()];
 			model_.editedStudents_.copyInto(temp);
 			ArrayList<Unit> edited = new ArrayList<Unit>(Arrays.asList(temp));
-			
-			if(size == 4)
-			{
-				finalList_ = StaticDecreasingUnitPool.generateRoomsSize4NoRemainder(edited);
-			}
-			else
-			{
-				DecreasingUnitPool result = new DecreasingUnitPool(edited, size);
-				finalList_ = result.findStrongestGroups();
-			}
+			finalList_ = StaticDecreasingUnitPool.generateRoomsFromSequence(edited, sequence);
 			fileChooserIntoTextFile();
 		}
 	}
 
 	/**
-	 * This function brings up a file chooser and the user saves the finalList_ into the text file.
+	 * This function brings up a file chooser and the user saves the finalList_
+	 * into the text file.
 	 */
 	public void fileChooserIntoTextFile()
 	{
-        JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter textFileOnlyFilter = new FileNameExtensionFilter(".txt", "txt", "text");
-        fileChooser.setFileFilter(textFileOnlyFilter);
-        int returnVal = fileChooser.showSaveDialog(new JFrame());
-        if (returnVal == JFileChooser.APPROVE_OPTION)
-        {
-            try
-            {
-                File file = fileChooser.getSelectedFile();
-                if (!file.getName().endsWith(".txt")) 
-                {
-                	file = new File(file.toString() + ".txt");
-                } 
-
-                PrintWriter writer = new PrintWriter(file);
-                
-        		for(int i = 0; i < finalList_.groupSet_.size(); i++)
-        		{
-        			writer.println("Group " + (i+1) + ": " + finalList_.groupSet_.get(i).toString());
-        		}
-        		writer.close();
-        		
-        		Object[] options = {"Yes", "No"};
-        		int n = JOptionPane.showOptionDialog(new JFrame(),
-        	    "Would you like to open the generated rooms?",
-        	    "DC Room Generator",
-        	    JOptionPane.YES_NO_OPTION,
-        	    JOptionPane.QUESTION_MESSAGE,
-        	    null,     //do not use a custom Icon
-        	    options,  //the titles of buttons
-        	    options[0]); //default button title
-        		
-        		if(n == 0) // if "yes" to continue is selected
-        		{
-        			openGeneratedFile(file);
-        		}
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
-	}
-	
-	/**
-	 * This function opens a file with the default text editor on the system.
-	 * @param file - the file desired to be opened
-	 */
-	public void openGeneratedFile(File file)
-	{
-		if (Desktop.isDesktopSupported()) 
+		JFileChooser fileChooser = new JFileChooser();
+		FileNameExtensionFilter textFileOnlyFilter = new FileNameExtensionFilter(
+				".txt", "txt", "text");
+		fileChooser.setFileFilter(textFileOnlyFilter);
+		int returnVal = fileChooser.showSaveDialog(new JFrame());
+		if (returnVal == JFileChooser.APPROVE_OPTION)
 		{
-		    try
+			try
 			{
-				Desktop.getDesktop().edit(file);
-			} 
-		    catch (IOException e)
+				File file = fileChooser.getSelectedFile();
+				if (!file.getName().endsWith(".txt"))
+				{
+					file = new File(file.toString() + ".txt");
+				}
+
+				PrintWriter writer = new PrintWriter(file);
+
+				for (int i = 0; i < finalList_.groupSet_.size(); i++)
+				{
+					writer.println("Group " + (i + 1) + ": "
+							+ finalList_.groupSet_.get(i).toString());
+				}
+				writer.close();
+
+				Object[] options = { "Yes", "No" };
+				int n = JOptionPane.showOptionDialog(new JFrame(),
+						"Would you like to open the generated rooms?",
+						"DC Room Generator", JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE, null, // do not use a
+															// custom Icon
+						options, // the titles of buttons
+						options[0]); // default button title
+
+				if (n == 0) // if "yes" to continue is selected
+				{
+					openGeneratedFile(file);
+				}
+			} catch (IOException e)
 			{
 				e.printStackTrace();
 			}
-		} 
-		else 
-		{
-			JOptionPane.showMessageDialog(new JFrame(), "Could not find a text editor.");
 		}
 	}
-	
+
 	/**
-	 * This displays an option dialog that asks the user if he/she wishes to save before exiting.
+	 * This function opens a file with the default text editor on the system.
+	 * 
+	 * @param file
+	 *            - the file desired to be opened
+	 */
+	public void openGeneratedFile(File file)
+	{
+		if (Desktop.isDesktopSupported())
+		{
+			try
+			{
+				Desktop.getDesktop().edit(file);
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		} else
+		{
+			JOptionPane.showMessageDialog(new JFrame(),
+					"Could not find a text editor.");
+		}
+	}
+
+	/**
+	 * This displays an option dialog that asks the user if he/she wishes to
+	 * save before exiting.
+	 * 
 	 * @return n - the result from the optionDialog
 	 */
 	public int shouldSaveOnExit()
 	{
-		Object[] options = {"Yes", "No"};
+		Object[] options = { "Yes", "No" };
 		int n = JOptionPane.showOptionDialog(new JFrame(),
-	    "Would you like to save before exiting?",
-	    "DC Room Generator",
-	    JOptionPane.YES_NO_OPTION,
-	    JOptionPane.QUESTION_MESSAGE,
-	    null,     //do not use a custom Icon
-	    options,  //the titles of buttons
-	    options[0]); //default button title
-		
+				"Would you like to save before exiting?", "DC Room Generator",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, // do
+																				// not
+																				// use
+																				// a
+																				// custom
+																				// Icon
+				options, // the titles of buttons
+				options[0]); // default button title
+
 		System.out.println(n);
-		
+
 		return n;
 	}
 }
